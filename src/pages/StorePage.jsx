@@ -1,20 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-
-const allProducts = [
-    { id: 1, name: "Classic T-Shirt", price: "$29.99", category: "Tops", description: "Everyday comfort with premium cotton.", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=400" },
-    { id: 2, name: "Denim Jacket", price: "$89.99", category: "Outerwear", description: "Timeless style, rugged construction.", image: "https://images.unsplash.com/photo-1551028719-0c1444ba22c0?auto=format&fit=crop&q=80&w=400" },
-    { id: 3, name: "Slim Fit Jeans", price: "$59.99", category: "Bottoms", description: "Stretchy, comfortable, perfect fit.", image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&q=80&w=400" },
-    { id: 4, name: "Sneakers", price: "$119.99", category: "Shoes", description: "Lightweight and stylish for urban adventures.", image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=400" },
-    { id: 5, name: "Hoodie", price: "$49.99", category: "Outerwear", description: "Cozy fleece for chilly evenings.", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=400" },
-    { id: 6, name: "Chino Pants", price: "$69.99", category: "Bottoms", description: "Versatile and sharp for any occasion.", image: "https://images.unsplash.com/photo-1624378439575-d8705e4d2578?auto=format&fit=crop&q=80&w=400" },
-];
+import { useCart } from "../context/CartContext";
+import { supabase } from "../lib/supabase";
+import { Loader2 } from "lucide-react";
 
 const StorePage = () => {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
+    const { addToCart } = useCart();
 
-    const filteredProducts = allProducts.filter(product =>
+    const fetchProducts = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('products')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setProducts(data || []);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts();
+
+        const channel = supabase
+            .channel('store-products-changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+                fetchProducts();
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
+
+    const filteredProducts = products.filter(product =>
         product.name.toLowerCase().includes(search.toLowerCase())
     );
 
@@ -62,37 +90,47 @@ const StorePage = () => {
                 </section>
 
                 <div className="container mx-auto px-4 lg:px-8 py-16">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
-                        {filteredProducts.map((product) => (
-                            <div key={product.id} className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
-                                <div className="bg-gray-100 aspect-square overflow-hidden relative">
-                                    <img
-                                        src={product.image}
-                                        alt={product.name}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                                    />
-                                    <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300"></div>
-                                </div>
-                                <div className="p-6 flex flex-col flex-grow text-left">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <p className="text-xs text-indigo-500 font-bold uppercase tracking-widest">{product.category}</p>
-                                        <p className="font-bold text-gray-900">{product.price}</p>
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-20">
+                            <Loader2 className="animate-spin text-gray-900 mb-4" size={48} />
+                            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Curating your store...</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+                            {filteredProducts.map((product) => (
+                                <div key={product.id} className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+                                    <div className="bg-gray-100 aspect-square overflow-hidden relative">
+                                        <img
+                                            src={product.image_url || product.image}
+                                            alt={product.name}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                        />
+                                        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300"></div>
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">{product.name}</h3>
-                                    <p className="text-sm text-gray-500 mb-6 flex-grow">{product.description}</p>
+                                    <div className="p-6 flex flex-col flex-grow text-left">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <p className="text-xs text-indigo-500 font-bold uppercase tracking-widest">{product.category}</p>
+                                            <p className="font-bold text-gray-900">${product.price}</p>
+                                        </div>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">{product.name}</h3>
+                                        <p className="text-sm text-gray-500 mb-6 flex-grow line-clamp-2">{product.description}</p>
 
-                                    <button className="w-full bg-gray-50 text-gray-900 py-3 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-colors border border-gray-200 hover:border-gray-900 text-sm tracking-wide">
-                                        Add to Cart
-                                    </button>
+                                        <button
+                                            onClick={() => addToCart(product)}
+                                            className="w-full bg-gray-50 text-gray-900 py-3 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-colors border border-gray-200 hover:border-gray-900 text-sm tracking-wide"
+                                        >
+                                            Add to Cart
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                        {filteredProducts.length === 0 && (
-                            <div className="col-span-full text-center py-20">
-                                <p className="text-xl text-gray-500 font-medium">No products found matching "{search}"</p>
-                            </div>
-                        )}
-                    </div>
+                            ))}
+                            {filteredProducts.length === 0 && (
+                                <div className="col-span-full text-center py-20">
+                                    <p className="text-xl text-gray-500 font-medium">No products found matching "{search}"</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </main>
             <Footer />
