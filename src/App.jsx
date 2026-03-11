@@ -16,11 +16,45 @@ import { Toaster } from "react-hot-toast";
 import PrivacyBanner from "./components/PrivacyBanner";
 import LoadingScreen from "./components/LoadingScreen";
 import { useAuth } from "./context/AuthContext";
+import { useState, useEffect } from "react";
+import HeroImage from "./assets/hero.png";
 
 const AppContent = () => {
-  const { loading } = useAuth();
+  const { loading: authLoading } = useAuth();
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
-  if (loading) {
+  useEffect(() => {
+    // Prefetch key images
+    const imagesToLoad = [HeroImage];
+    let loadedCount = 0;
+
+    if (imagesToLoad.length === 0) {
+      setImagesLoaded(true);
+      return;
+    }
+
+    imagesToLoad.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        loadedCount++;
+        if (loadedCount === imagesToLoad.length) {
+          setImagesLoaded(true);
+        }
+      };
+      img.onerror = () => {
+        // Continue even if an image fails
+        loadedCount++;
+        if (loadedCount === imagesToLoad.length) {
+          setImagesLoaded(true);
+        }
+      };
+    });
+  }, []);
+
+  const isLoading = authLoading || !imagesLoaded;
+
+  if (isLoading) {
     return <LoadingScreen />;
   }
 

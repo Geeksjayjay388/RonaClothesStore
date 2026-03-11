@@ -1,12 +1,28 @@
-import { Link, useLocation } from "react-router-dom";
-import { ShoppingBag, ShoppingCart, User, Search, Menu } from "lucide-react";
+import { ShoppingBag, ShoppingCart, User, Search, Menu, X, ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
     const location = useLocation();
+    const [isOpen, setIsOpen] = useState(false);
     const { cartCount } = useCart();
-    const { user, isAdmin } = useAuth();
+    const { user, isAdmin, signOut } = useAuth();
+
+    // Close mobile menu on location change
+    useEffect(() => {
+        setIsOpen(false);
+    }, [location]);
+
+    // Disable scroll when mobile menu is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+        }
+    }, [isOpen]);
 
     // Helper to style active links
     const navLinkClass = (path) =>
@@ -21,7 +37,10 @@ const Navbar = () => {
             <div className="container mx-auto px-6 h-20 flex justify-between items-center">
 
                 {/* Mobile Menu Icon (Hidden on Desktop) */}
-                <button className="lg:hidden text-gray-900">
+                <button
+                    onClick={() => setIsOpen(true)}
+                    className="lg:hidden text-gray-900 hover:text-red-600 transition-colors"
+                >
                     <Menu size={24} />
                 </button>
 
@@ -85,11 +104,85 @@ const Navbar = () => {
                             </span>
                         )}
                     </Link>
-
-                    <button className="lg:hidden text-gray-900 hover:text-red-600 transition-colors">
-                        <Menu size={24} />
-                    </button>
                 </div>
+
+                {/* --- MOBILE OVERLAY --- */}
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[200] lg:hidden"
+                        >
+                            {/* Backdrop */}
+                            <div
+                                onClick={() => setIsOpen(false)}
+                                className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                            />
+
+                            {/* Drawer */}
+                            <motion.div
+                                initial={{ x: "-100%" }}
+                                animate={{ x: 0 }}
+                                exit={{ x: "-100%" }}
+                                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                                className="absolute top-0 left-0 bottom-0 w-[80%] max-w-xs bg-white shadow-2xl flex flex-col"
+                            >
+                                <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+                                    <Link to="/" className="text-xl font-black tracking-tighter text-gray-900">
+                                        RONA<span className="text-red-600">.</span>
+                                    </Link>
+                                    <button
+                                        onClick={() => setIsOpen(false)}
+                                        className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                </div>
+
+                                <div className="flex-grow overflow-y-auto py-8 px-6 space-y-6">
+                                    <div className="flex flex-col gap-6">
+                                        <Link to="/" className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">Home</Link>
+                                        <Link to="/store" className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">Store</Link>
+                                        <Link to="/collections" className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">Collections</Link>
+                                        <Link to="/about" className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">Our Story</Link>
+                                        {isAdmin && (
+                                            <Link to="/admin" className="text-2xl font-black text-red-600 lowercase tracking-tighter">Admin Dashboard</Link>
+                                        )}
+                                    </div>
+
+                                    <div className="pt-8 border-t border-gray-100 mt-8 space-y-6">
+                                        {user ? (
+                                            <>
+                                                <Link to="/profile" className="flex items-center justify-between group">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
+                                                            <User size={20} />
+                                                        </div>
+                                                        <span className="font-bold text-gray-900">{user.user_metadata?.first_name || "Account"}</span>
+                                                    </div>
+                                                    <ArrowRight size={16} className="text-gray-400 group-hover:text-red-600 transition-colors" />
+                                                </Link>
+                                                <button
+                                                    onClick={() => signOut()}
+                                                    className="w-full py-4 text-center font-bold text-gray-400 hover:text-red-600 transition-colors text-sm uppercase tracking-widest"
+                                                >
+                                                    Sign Out
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <div className="flex flex-col gap-4">
+                                                <Link to="/login" className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs text-center">Login</Link>
+                                                <Link to="/signup" className="w-full py-4 border-2 border-gray-100 text-gray-900 rounded-2xl font-black uppercase tracking-widest text-xs text-center">Join The Collective</Link>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </nav>
     );

@@ -17,7 +17,7 @@ const AboutPage = () => {
                     <div className="absolute inset-0 bg-black/40"></div>
                     <div className="relative z-10 text-center text-white px-6">
                         <span className="font-bold tracking-[0.3em] uppercase text-sm mb-4 block">Our Story</span>
-                        <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-6">Designed to Last.</h1>
+                        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight mb-6">Designed to Last.</h1>
                     </div>
                 </section>
 

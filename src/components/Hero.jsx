@@ -32,13 +32,13 @@ const Hero = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent md:from-white/90 md:via-white/50" />
             </div>
 
-            <div className="container mx-auto px-6 md:px-13 z-10 relative pb-20 lg:pb-32">
+            <div className="container mx-auto px-6 md:px-13 z-10 relative pb-12 lg:pb-32 pt-20 lg:pt-0">
                 <div className="max-w-2xl text-left relative">
                     {/* Decorative element */}
                     <div className="absolute -left-6 -top-6 w-20 h-20 bg-red-500/10 rounded-full blur-2xl"></div>
 
-                    <div className="inline-flex items-center gap-3 text-red-600 font-bold tracking-[0.2em] uppercase mb-6 text-sm relative z-10 h-6">
-                        <span className="w-8 h-px bg-red-600"></span>
+                    <div className="inline-flex items-center gap-3 text-red-600 font-bold tracking-[0.2em] uppercase mb-4 md:mb-6 text-[10px] md:text-sm relative z-10 h-6">
+                        <span className="w-6 md:w-8 h-px bg-red-600"></span>
                         <div className="relative w-64 overflow-hidden h-full">
                             <AnimatePresence mode="wait">
                                 <motion.span
@@ -55,14 +55,14 @@ const Hero = () => {
                         </div>
                     </div>
 
-                    <h1 className="text-6xl md:text-8xl font-black mb-6 leading-[1.1] tracking-tight text-gray-900 relative z-10">
-                        Elevate Your <br />
+                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-black mb-4 md:mb-6 leading-[1.15] md:leading-[1.1] tracking-tight text-gray-900 relative z-10">
+                        Elevate Your <br className="hidden sm:block" />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-pink-600">
                             Signature Style.
                         </span>
                     </h1>
 
-                    <p className="text-lg md:text-2xl text-gray-600 mb-10 leading-relaxed max-w-xl font-medium relative z-10">
+                    <p className="text-base md:text-2xl text-gray-600 mb-8 md:mb-10 leading-relaxed max-w-xl font-medium relative z-10">
                         Experience the fusion of comfort and high-fashion. Our curated 2026 collection is designed for those who <i className="text-gray-900 font-bold">lead</i>, not follow.
                     </p>
 
