@@ -35,10 +35,10 @@ const Hero = () => {
             <div className="container mx-auto px-6 md:px-13 z-10 relative pb-20 lg:pb-32">
                 <div className="max-w-2xl text-left relative">
                     {/* Decorative element */}
-                    <div className="absolute -left-6 -top-6 w-20 h-20 bg-indigo-500/10 rounded-full blur-2xl"></div>
+                    <div className="absolute -left-6 -top-6 w-20 h-20 bg-red-500/10 rounded-full blur-2xl"></div>
 
-                    <div className="inline-flex items-center gap-3 text-indigo-600 font-bold tracking-[0.2em] uppercase mb-6 text-sm relative z-10 h-6">
-                        <span className="w-8 h-px bg-indigo-600"></span>
+                    <div className="inline-flex items-center gap-3 text-red-600 font-bold tracking-[0.2em] uppercase mb-6 text-sm relative z-10 h-6">
+                        <span className="w-8 h-px bg-red-600"></span>
                         <div className="relative w-64 overflow-hidden h-full">
                             <AnimatePresence mode="wait">
                                 <motion.span
@@ -57,7 +57,7 @@ const Hero = () => {
 
                     <h1 className="text-6xl md:text-8xl font-black mb-6 leading-[1.1] tracking-tight text-gray-900 relative z-10">
                         Elevate Your <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-pink-600">
                             Signature Style.
                         </span>
                     </h1>
@@ -69,7 +69,7 @@ const Hero = () => {
                     <div className="flex flex-col sm:flex-row gap-6 relative z-10">
                         <Link
                             to="/store"
-                            className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-indigo-600 px-10 py-4 font-bold text-white transition-all duration-300 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30"
+                            className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-red-600 px-10 py-4 font-bold text-white transition-all duration-300 hover:bg-red-700 hover:shadow-xl hover:shadow-red-600/30"
                         >
                             <span className="absolute inset-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></span>
                             <span className="relative">Shop Collection</span>

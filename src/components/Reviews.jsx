@@ -11,7 +11,7 @@ const Reviews = () => {
         <section className="py-24 bg-gray-50/50 border-y border-gray-100">
             <div className="container mx-auto px-6">
                 <div className="flex flex-col items-center mb-16 text-center">
-                    <span className="text-indigo-600 font-bold tracking-[0.2em] uppercase text-xs mb-3">
+                    <span className="text-red-600 font-bold tracking-[0.2em] uppercase text-xs mb-3">
                         Testimonials
                     </span>
                     <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
@@ -21,20 +21,20 @@ const Reviews = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                     {reviews.map((review) => (
-                        <div 
-                            key={review.id} 
+                        <div
+                            key={review.id}
                             className="relative bg-white p-10 rounded-3xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] transition-all duration-500 group"
                         >
                             {/* Accent Quote Icon */}
-                            <Quote className="absolute top-8 right-10 text-gray-100 group-hover:text-indigo-50 transition-colors" size={48} />
-                            
+                            <Quote className="absolute top-8 right-10 text-gray-100 group-hover:text-pink-50 transition-colors" size={48} />
+
                             <div className="relative z-10">
                                 <div className="flex gap-1 mb-6">
                                     {[...Array(5)].map((_, i) => (
-                                        <Star 
-                                            key={i} 
-                                            size={16} 
-                                            className={`${i < review.rating ? "fill-indigo-600 text-indigo-600" : "text-gray-200"}`} 
+                                        <Star
+                                            key={i}
+                                            size={16}
+                                            className={`${i < review.rating ? "fill-red-600 text-red-600" : "text-gray-200"}`}
                                         />
                                     ))}
                                 </div>
@@ -44,7 +44,7 @@ const Reviews = () => {
                                 </p>
 
                                 <div className="flex items-center gap-3 pt-6 border-t border-gray-50">
-                                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
+                                    <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-red-700 font-bold text-sm">
                                         {review.name.charAt(0)}
                                     </div>
                                     <div>

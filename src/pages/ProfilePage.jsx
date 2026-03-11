@@ -161,7 +161,7 @@ const ProfilePage = () => {
 
     const menuItems = [
         { id: "personal", icon: UserIcon, label: "Personal Info", color: "blue" },
-        { id: "orders", icon: Package, label: "Order History", color: "purple", badge: "0" },
+        { id: "orders", icon: Package, label: "Order History", color: "pink", badge: "0" },
         { id: "wishlist", icon: Heart, label: "Wishlist", color: "pink", badge: "0" },
         { id: "preferences", icon: Settings, label: "Preferences", color: "gray" },
     ];
@@ -177,7 +177,7 @@ const ProfilePage = () => {
         return (
             <div className="min-h-screen flex items-center justify-center bg-white">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 size={48} className="text-indigo-600 animate-spin" />
+                    <Loader2 size={48} className="text-red-600 animate-spin" />
                     <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Accessing the Archive...</p>
                 </div>
             </div>
@@ -197,7 +197,7 @@ const ProfilePage = () => {
                             <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
                                 {/* Avatar */}
                                 <div className="relative group">
-                                    <div className="w-28 h-28 rounded-2xl bg-indigo-600 flex items-center justify-center overflow-hidden shadow-lg shadow-indigo-100 relative">
+                                    <div className="w-28 h-28 rounded-2xl bg-red-600 flex items-center justify-center overflow-hidden shadow-lg shadow-red-100 relative">
                                         {profile?.avatar_url ? (
                                             <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
                                         ) : (
@@ -218,7 +218,7 @@ const ProfilePage = () => {
                                         <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
                                             {displayFirstName} {displayLastName}
                                         </h1>
-                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-wider">
+                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-50 text-red-700 text-xs font-bold uppercase tracking-wider">
                                             <Award size={12} />
                                             {memberTier}
                                         </span>
@@ -275,7 +275,7 @@ const ProfilePage = () => {
                                         </div>
                                         <div className="flex items-center justify-center md:justify-start gap-2">
                                             <span className="text-xl font-black text-gray-900">{stat.value}</span>
-                                            <span className="text-xs text-indigo-500 font-bold tracking-tight">{stat.trend}</span>
+                                            <span className="text-xs text-red-500 font-bold tracking-tight">{stat.trend}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -322,10 +322,10 @@ const ProfilePage = () => {
                             </div>
 
                             {/* Mini Promo Card */}
-                            <div className="bg-indigo-600 rounded-2xl p-6 shadow-lg shadow-indigo-100 relative overflow-hidden group">
+                            <div className="bg-red-600 rounded-2xl p-6 shadow-lg shadow-red-100 relative overflow-hidden group">
                                 <h3 className="font-black text-white text-lg mb-1 relative z-10">Premium Perks</h3>
-                                <p className="text-indigo-100 text-xs mb-4 relative z-10 font-medium tracking-wide leading-relaxed">Early access to limited drops and exclusive archive insights.</p>
-                                <button className="w-full py-2.5 bg-white text-indigo-600 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors relative z-10 shadow-sm">
+                                <p className="text-red-100 text-xs mb-4 relative z-10 font-medium tracking-wide leading-relaxed">Early access to limited drops and exclusive archive insights.</p>
+                                <button className="w-full py-2.5 bg-white text-red-600 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors relative z-10 shadow-sm">
                                     Learn More
                                 </button>
                                 <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl animate-pulse" />
@@ -431,8 +431,8 @@ const ProfilePage = () => {
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     <div className="flex items-center justify-between p-5 rounded-2xl bg-gray-50 border border-gray-200/50 hover:border-gray-300 transition-all group cursor-pointer">
                                                         <div className="flex items-center gap-4">
-                                                            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-                                                                <Shield className="text-indigo-600" size={18} />
+                                                            <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center">
+                                                                <Shield className="text-red-600" size={18} />
                                                             </div>
                                                             <div>
                                                                 <h4 className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Account Status</h4>

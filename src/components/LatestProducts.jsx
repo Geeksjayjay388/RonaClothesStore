@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { ShoppingBag, Eye, Loader2 } from "lucide-react";
+import { ShoppingBag, Eye, ArrowRight, Loader2 } from "lucide-react";
+import { formatPrice } from "../lib/formatters";
 import { useCart } from "../context/CartContext";
 import { supabase } from "../lib/supabase";
 
@@ -52,7 +53,7 @@ const LatestProducts = () => {
                             The pieces everyone is talking about. Freshly dropped and ready for your wardrobe.
                         </p>
                     </div>
-                    <button className="hidden md:block text-indigo-600 font-bold border-b-2 border-indigo-600 pb-1 hover:text-indigo-800 hover:border-indigo-800 transition-all">
+                    <button className="hidden md:block text-red-600 font-bold border-b-2 border-red-600 pb-1 hover:text-red-800 hover:border-red-800 transition-all">
                         View All Products
                     </button>
                 </div>
@@ -82,10 +83,10 @@ const LatestProducts = () => {
 
                                     {/* Hover Overlay Actions */}
                                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-                                        <button onClick={() => addToCart(product)} className="bg-white text-gray-900 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:bg-indigo-600 hover:text-white">
+                                        <button onClick={() => addToCart(product)} className="bg-white text-gray-900 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:bg-red-600 hover:text-white">
                                             <ShoppingBag size={20} />
                                         </button>
-                                        <button className="bg-white text-gray-900 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75 hover:bg-indigo-600 hover:text-white">
+                                        <button className="bg-white text-gray-900 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75 hover:bg-red-600 hover:text-white">
                                             <Eye size={20} />
                                         </button>
                                     </div>
@@ -99,10 +100,10 @@ const LatestProducts = () => {
                                 {/* Product Info */}
                                 <div className="p-6 flex flex-col flex-grow text-left">
                                     <div className="flex justify-between items-start mb-2">
-                                        <p className="text-xs text-indigo-500 font-bold uppercase tracking-widest">{product.category}</p>
-                                        <p className="font-bold text-gray-900">${product.price}</p>
+                                        <p className="text-xs text-red-500 font-bold uppercase tracking-widest">{product.category}</p>
+                                        <p className="font-bold text-gray-900">{formatPrice(product.price)}</p>
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">{product.name}</h3>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">{product.name}</h3>
                                     <p className="text-sm text-gray-500 mb-6 flex-grow line-clamp-2">{product.description || "Everyday comfort with premium materials."}</p>
 
                                     <button onClick={() => addToCart(product)} className="w-full bg-gray-50 text-gray-900 py-3 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-colors border border-gray-200 hover:border-gray-900 text-sm tracking-wide"

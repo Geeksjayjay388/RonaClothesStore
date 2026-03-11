@@ -3,7 +3,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
 import { supabase } from "../lib/supabase";
-import { Loader2 } from "lucide-react";
+import { Search, ShoppingBag, Eye, Loader2, X } from "lucide-react";
+import { formatPrice } from "../lib/formatters";
 
 const StorePage = () => {
     const [products, setProducts] = useState([]);
@@ -68,11 +69,11 @@ const StorePage = () => {
                     <div className="container mx-auto px-6 lg:px-8 relative z-20 mt-12">
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                             <div className="max-w-xl text-left">
-                                <span className="inline-block text-indigo-400 font-bold tracking-[0.4em] uppercase text-xs mb-4">
+                                <span className="inline-block text-red-400 font-bold tracking-[0.4em] uppercase text-xs mb-4">
                                     Full Catalog
                                 </span>
                                 <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none">
-                                    Shop <span className="text-indigo-500">All.</span>
+                                    Shop <span className="text-red-500">All.</span>
                                 </h1>
                             </div>
 
@@ -82,7 +83,7 @@ const StorePage = () => {
                                     placeholder="Search the collection..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    className="w-full px-8 py-4 rounded-full bg-white/10 border border-white/20 text-white focus:outline-none focus:border-indigo-500 focus:bg-white/15 transition-all text-lg backdrop-blur-sm placeholder:text-gray-400"
+                                    className="w-full px-8 py-4 rounded-full bg-white/10 border border-white/20 text-white focus:outline-none focus:border-red-500 focus:bg-white/15 transition-all text-lg backdrop-blur-sm placeholder:text-gray-400"
                                 />
                             </div>
                         </div>
@@ -109,10 +110,10 @@ const StorePage = () => {
                                     </div>
                                     <div className="p-6 flex flex-col flex-grow text-left">
                                         <div className="flex justify-between items-start mb-2">
-                                            <p className="text-xs text-indigo-500 font-bold uppercase tracking-widest">{product.category}</p>
-                                            <p className="font-bold text-gray-900">${product.price}</p>
+                                            <p className="text-xs text-red-500 font-bold uppercase tracking-widest">{product.category}</p>
+                                            <p className="font-bold text-gray-900">{formatPrice(product.price)}</p>
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">{product.name}</h3>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">{product.name}</h3>
                                         <p className="text-sm text-gray-500 mb-6 flex-grow line-clamp-2">{product.description}</p>
 
                                         <button

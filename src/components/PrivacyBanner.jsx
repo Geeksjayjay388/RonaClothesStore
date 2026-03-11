@@ -44,8 +44,8 @@ const PrivacyBanner = () => {
                     <div className="bg-white border border-gray-100 p-8 shadow-2xl rounded-3xl relative overflow-hidden">
                         <div className="relative z-10">
                             <div className="flex gap-5 items-start mb-8">
-                                <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center shrink-0">
-                                    <Cookie size={24} className="text-indigo-600" />
+                                <div className="w-12 h-12 bg-pink-50 rounded-2xl flex items-center justify-center shrink-0">
+                                    <Cookie size={24} className="text-red-600" />
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -60,7 +60,7 @@ const PrivacyBanner = () => {
                             <div className="flex gap-3">
                                 <button
                                     onClick={handleAccept}
-                                    className="flex-1 py-3.5 bg-gray-900 hover:bg-indigo-600 text-white rounded-2xl text-xs font-bold uppercase tracking-widest transition-all duration-300"
+                                    className="flex-1 py-3.5 bg-gray-900 hover:bg-red-600 text-white rounded-2xl text-xs font-bold uppercase tracking-widest transition-all duration-300"
                                 >
                                     Accept All
                                 </button>

@@ -61,11 +61,11 @@ const CollectionsPage = () => {
 
                     <div className="container mx-auto px-6 lg:px-8 relative z-20 mt-12 text-left">
                         <div className="max-w-3xl">
-                            <span className="inline-block text-indigo-400 font-bold tracking-[0.4em] uppercase text-xs mb-4">
+                            <span className="inline-block text-red-400 font-bold tracking-[0.4em] uppercase text-xs mb-4">
                                 Curated Series
                             </span>
                             <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none mb-6">
-                                The <span className="text-indigo-500">Archive.</span>
+                                The <span className="text-red-500">Archive.</span>
                             </h1>
                             <p className="text-lg text-gray-400 max-w-xl leading-relaxed">
                                 Explore our series of curated edits, ranging from seasonal essentials to our permanent minimalist core collection.
@@ -110,13 +110,13 @@ const CollectionsPage = () => {
                                         {/* Content Area */}
                                         <div className="p-8 flex flex-col flex-grow text-left">
                                             <div className="flex items-center gap-2 mb-4">
-                                                <Layers size={14} className="text-indigo-500" />
-                                                <p className="text-xs text-indigo-500 font-bold uppercase tracking-widest lowercase">
+                                                <Layers size={14} className="text-red-500" />
+                                                <p className="text-xs text-red-500 font-bold uppercase tracking-widest lowercase">
                                                     Series {collection.id.toString().slice(-2)}
                                                 </p>
                                             </div>
 
-                                            <h3 className="text-3xl font-black text-gray-900 mb-4 group-hover:text-indigo-600 transition-colors tracking-tight">
+                                            <h3 className="text-3xl font-black text-gray-900 mb-4 group-hover:text-red-600 transition-colors tracking-tight">
                                                 {collection.title}
                                             </h3>
 
@@ -126,7 +126,7 @@ const CollectionsPage = () => {
 
                                             <Link
                                                 to={collection.link || `/store?collection=${collection.title.toLowerCase().replace(/\s+/g, '-')}`}
-                                                className="inline-flex items-center justify-between w-full group/btn bg-gray-900 text-white px-8 py-4 rounded-2xl font-bold transition-all hover:bg-indigo-600 shadow-lg hover:shadow-indigo-200"
+                                                className="inline-flex items-center justify-between w-full group/btn bg-gray-900 text-white px-8 py-4 rounded-2xl font-bold transition-all hover:bg-red-600 shadow-lg hover:shadow-red-200"
                                             >
                                                 <span className="tracking-wide">View Collection</span>
                                                 <ArrowRight className="w-5 h-5 transform group-hover/btn:translate-x-2 transition-transform" />

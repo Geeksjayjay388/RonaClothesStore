@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { X, ArrowRight } from "lucide-react";
+import { ShoppingBag, ArrowRight, Trash2, Plus, Minus, Loader2 } from "lucide-react";
+import { formatPrice } from "../lib/formatters";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
@@ -21,7 +22,7 @@ const CartPage = () => {
                         <h1 className="text-5xl md:text-6xl font-black text-gray-900 tracking-tighter">Your Cart.</h1>
                         <p className="text-gray-500 mt-4 font-medium">{cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your bag.</p>
                     </div>
-                    <Link to="/store" className="text-sm font-bold tracking-[0.2em] uppercase text-gray-500 border-b border-transparent hover:text-indigo-600 hover:border-indigo-600 transition-all pb-1">
+                    <Link to="/store" className="text-sm font-bold tracking-[0.2em] uppercase text-gray-500 border-b border-transparent hover:text-red-600 hover:border-red-600 transition-all pb-1">
                         Continue Shopping
                     </Link>
                 </header>
@@ -32,7 +33,7 @@ const CartPage = () => {
                         {cartItems.length === 0 ? (
                             <div className="py-24 text-center border border-dashed border-gray-200 rounded-2xl bg-gray-50">
                                 <p className="text-2xl font-bold text-gray-400 mb-6">Your bag is completely empty.</p>
-                                <Link to="/store" className="inline-flex items-center gap-2 bg-gray-900 text-white px-8 py-4 rounded-full font-bold hover:bg-indigo-600 transition-colors tracking-wide">
+                                <Link to="/store" className="inline-flex items-center gap-2 bg-gray-900 text-white px-8 py-4 rounded-full font-bold hover:bg-red-600 transition-colors tracking-wide">
                                     Discover The Collection <ArrowRight size={18} />
                                 </Link>
                             </div>
@@ -68,7 +69,7 @@ const CartPage = () => {
                                                     <span className="w-8 text-center font-bold text-sm">{item.quantity}</span>
                                                     <button onClick={() => updateQuantity(item.id, 1, item.size, item.color)} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-50 rounded-r-full transition-colors">+</button>
                                                 </div>
-                                                <p className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">${(item.price * item.quantity).toFixed(2)}</p>
+                                                <p className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">{formatPrice(item.price * item.quantity)}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -85,17 +86,17 @@ const CartPage = () => {
                             <div className="space-y-6 mb-8 text-gray-600 font-medium">
                                 <div className="flex justify-between items-center text-lg">
                                     <span>Subtotal</span>
-                                    <span className="font-bold text-gray-900">${subtotal.toFixed(2)}</span>
+                                    <span className="font-bold text-gray-900">{formatPrice(subtotal)}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-lg">
                                     <span>Shipping</span>
-                                    <span className="font-bold text-gray-900">${cartItems.length > 0 ? shipping.toFixed(2) : "0.00"}</span>
+                                    <span className="font-bold text-gray-900">{cartItems.length > 0 ? formatPrice(shipping) : formatPrice(0)}</span>
                                 </div>
 
                                 <div className="border-t border-gray-200 pt-6 mt-6">
                                     <div className="flex justify-between items-end">
                                         <span className="text-lg font-bold text-gray-900">Total</span>
-                                        <span className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter">${total.toFixed(2)}</span>
+                                        <span className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter">{formatPrice(total)}</span>
                                     </div>
                                     <p className="text-right text-xs text-gray-400 mt-2 font-bold tracking-widest uppercase">Taxes included</p>
                                 </div>
@@ -103,7 +104,7 @@ const CartPage = () => {
 
                             <button
                                 disabled={cartItems.length === 0}
-                                className="w-full bg-black text-white py-5 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-indigo-600 transition-colors flex items-center justify-center gap-3 disabled:opacity-30 disabled:hover:bg-black group shadow-xl shadow-black/10"
+                                className="w-full bg-black text-white py-5 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-red-600 transition-colors flex items-center justify-center gap-3 disabled:opacity-30 disabled:hover:bg-black group shadow-xl shadow-black/10"
                             >
                                 Secure Checkout
                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

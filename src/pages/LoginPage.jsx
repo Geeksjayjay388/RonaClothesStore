@@ -61,7 +61,7 @@ const LoginPage = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent"></div>
 
                 <div className="absolute bottom-16 left-16 right-16">
-                    <span className="font-bold tracking-[0.3em] uppercase text-xs mb-4 block text-indigo-400">Curated Excellence</span>
+                    <span className="font-bold tracking-[0.3em] uppercase text-xs mb-4 block text-red-400">Curated Excellence</span>
                     <h2 className="text-5xl xl:text-6xl font-black text-white tracking-tighter leading-none mb-6">
                         The <br /> Collective.
                     </h2>
@@ -149,7 +149,7 @@ const LoginPage = () => {
                         </form>
 
                         <div className="pt-8 border-t border-gray-100 flex flex-col gap-4">
-                            <Link to="/signup" className="text-center text-sm font-bold text-gray-500 hover:text-indigo-600 transition-colors tracking-tight">
+                            <Link to="/signup" className="text-center text-sm font-bold text-gray-500 hover:text-red-600 transition-colors tracking-tight">
                                 Don't have an account? <span className="text-gray-900">Join the collective</span>
                             </Link>
                         </div>

@@ -64,7 +64,7 @@ const SignUpPage = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent"></div>
 
                 <div className="absolute bottom-16 left-16 right-16">
-                    <span className="font-bold tracking-[0.3em] uppercase text-xs mb-4 block text-indigo-400">Join The Collective</span>
+                    <span className="font-bold tracking-[0.3em] uppercase text-xs mb-4 block text-red-400">Join The Collective</span>
                     <h2 className="text-5xl xl:text-6xl font-black text-white tracking-tighter leading-none mb-6">
                         Unlock <br /> The Archive.
                     </h2>
@@ -174,7 +174,7 @@ const SignUpPage = () => {
                         </form>
 
                         <p className="text-center text-sm text-gray-500 pt-6 font-medium">
-                            Already a member? <Link to="/login" className="font-bold text-gray-900 hover:text-indigo-600 transition-colors tracking-tight">Sign In</Link>
+                            Already a member? <Link to="/login" className="font-bold text-gray-900 hover:text-red-600 transition-colors tracking-tight">Sign In</Link>
                         </p>
                     </div>
                 </div>

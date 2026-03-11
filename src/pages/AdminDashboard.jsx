@@ -1,24 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-    LayoutDashboard,
-    Package,
-    Layers,
-    Plus,
-    Edit2,
-    Trash2,
-    ExternalLink,
-    Search,
-    ChevronRight,
-    TrendingUp,
-    ShoppingBag,
-    UserPlus,
-    DollarSign,
-    MoreVertical,
-    Save,
-    X,
-    Image as ImageIcon,
-    Loader2
-} from "lucide-react";
+import { Plus, Edit2, Trash2, ExternalLink, Search, UserPlus, DollarSign, Package, Layers, LayoutDashboard, PlusCircle, MoreVertical, Save, Image as ImageIcon, Eye, EyeOff, X, ArrowLeft, Loader2, ChevronRight, TrendingUp, ShoppingBag } from "lucide-react";
+import { formatPrice } from "../lib/formatters";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import { supabase } from "../lib/supabase";
@@ -178,9 +160,9 @@ const AdminDashboard = () => {
     ];
 
     const stats = [
-        { label: "Inventory", value: products.length, icon: Package, trend: `+${products.length}`, color: "emerald" },
-        { label: "Collections", value: collections.length, icon: Layers, trend: `+${collections.length}`, color: "blue" },
-        { label: "Retail Value", value: `$${products.reduce((acc, p) => acc + parseFloat(p.price), 0).toFixed(0)}`, icon: DollarSign, trend: "Live", color: "purple" },
+        { label: "Inventory", value: products.length, icon: Package, trend: `+${products.length}`, color: "red" },
+        { label: "Collections", value: collections.length, icon: Layers, trend: `+${collections.length}`, color: "pink" },
+        { label: "Retail Value", value: formatPrice(products.reduce((acc, p) => acc + parseFloat(p.price), 0)), icon: DollarSign, trend: "Live", color: "red" },
     ];
 
     return (
@@ -217,11 +199,11 @@ const AdminDashboard = () => {
                                 </nav>
                             </div>
 
-                            <div className="bg-indigo-600 rounded-3xl p-6 shadow-xl shadow-indigo-100 text-white relative overflow-hidden group">
+                            <div className="bg-red-600 rounded-3xl p-6 shadow-xl shadow-red-100 text-white relative overflow-hidden group">
                                 <div className="relative z-10">
                                     <h4 className="font-black text-lg mb-1 italic">Pro Features</h4>
-                                    <p className="text-sm text-indigo-100 mb-4 font-medium">Connect Shop to Meta Catalog and TikTok.</p>
-                                    <button className="w-full py-2.5 bg-white text-indigo-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors">
+                                    <p className="text-sm text-red-100 mb-4 font-medium">Connect Shop to Meta Catalog and TikTok.</p>
+                                    <button className="w-full py-2.5 bg-white text-red-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors">
                                         Upgrade
                                     </button>
                                 </div>
@@ -236,7 +218,7 @@ const AdminDashboard = () => {
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div>
                                     <h1 className="text-4xl font-black tracking-tighter text-gray-900 lowercase">
-                                        {activeTab}<span className="text-indigo-600">.</span>
+                                        {activeTab}<span className="text-red-600">.</span>
                                     </h1>
                                     <p className="text-gray-500 font-medium text-sm mt-1">Manage your storefront products and collections.</p>
                                 </div>
@@ -249,7 +231,7 @@ const AdminDashboard = () => {
                                                 setEditItem(null);
                                                 setIsModalOpen(true);
                                             }}
-                                            className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-indigo-100 text-sm whitespace-nowrap"
+                                            className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-red-100 text-sm whitespace-nowrap"
                                         >
                                             <Plus size={18} />
                                             <span>Add {activeTab === "products" ? "Product" : "Collection"}</span>
@@ -300,10 +282,10 @@ const AdminDashboard = () => {
                                                                 initial={{ height: 0 }}
                                                                 animate={{ height: `${h}%` }}
                                                                 transition={{ delay: i * 0.1, duration: 1 }}
-                                                                className="bg-indigo-50 border-x border-t border-indigo-100 rounded-t-lg group-hover:bg-indigo-600 transition-colors"
+                                                                className="bg-pink-50 border-x border-t border-pink-100 rounded-t-lg group-hover:bg-red-600 transition-colors"
                                                             />
-                                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                ${h * 12}
+                                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                                                {formatPrice(h * 12)}
                                                             </div>
                                                         </div>
                                                     ))}
@@ -317,9 +299,9 @@ const AdminDashboard = () => {
                                                 <h3 className="text-lg font-black uppercase tracking-widest text-gray-900 mb-6">Store Health</h3>
                                                 <div className="space-y-6">
                                                     {[
-                                                        { label: "Inventory", value: "Optimal", color: "emerald", score: 98 },
-                                                        { label: "Delivery", value: "Delayed", color: "amber", score: 72 },
-                                                        { label: "Satisfaction", value: "Excellent", color: "indigo", score: 95 },
+                                                        { label: "Inventory", value: "Optimal", color: "red", score: 98 },
+                                                        { label: "Delivery", value: "Delayed", color: "pink", score: 72 },
+                                                        { label: "Satisfaction", value: "Excellent", color: "red", score: 95 },
                                                     ].map((item, i) => (
                                                         <div key={i}>
                                                             <div className="flex justify-between items-end mb-2">
@@ -355,6 +337,7 @@ const AdminDashboard = () => {
                                                     <tr className="bg-gray-50/50 border-b border-gray-100">
                                                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400">Preview</th>
                                                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400">Details</th>
+                                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400">Price</th>
                                                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
                                                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right" style={{ width: '120px' }}>Actions</th>
                                                     </tr>
@@ -362,7 +345,7 @@ const AdminDashboard = () => {
                                                 <tbody className="divide-y divide-gray-50">
                                                     {(activeTab === "products" ? products : collections).length === 0 ? (
                                                         <tr>
-                                                            <td colSpan="4" className="px-8 py-12 text-center text-gray-400 font-medium">
+                                                            <td colSpan="5" className="px-8 py-12 text-center text-gray-400 font-medium">
                                                                 No {activeTab} found. Click 'Add {activeTab === "products" ? "Product" : "Collection"}' to create one.
                                                             </td>
                                                         </tr>
@@ -379,8 +362,13 @@ const AdminDashboard = () => {
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-8 py-4">
-                                                                    <h4 className="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors truncate max-w-[200px]">{item.name || item.title}</h4>
+                                                                    <h4 className="font-bold text-gray-900 group-hover:text-red-600 transition-colors truncate max-w-[200px]">{item.name || item.title}</h4>
                                                                     <p className="text-xs text-gray-500 mt-0.5">{item.category || item.tag}</p>
+                                                                </td>
+                                                                <td className="px-8 py-4">
+                                                                    <span className="font-bold text-gray-900">
+                                                                        {item.price ? formatPrice(item.price) : "—"}
+                                                                    </span>
                                                                 </td>
                                                                 <td className="px-8 py-4">
                                                                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
@@ -391,7 +379,7 @@ const AdminDashboard = () => {
                                                                     <div className="flex items-center justify-end gap-2">
                                                                         <button
                                                                             onClick={() => openEditModal(item, activeTab === "products" ? "product" : "collection")}
-                                                                            className="p-2 hover:bg-white rounded-lg transition-colors text-gray-400 hover:text-indigo-600 border border-transparent hover:border-gray-100"
+                                                                            className="p-2 hover:bg-white rounded-lg transition-colors text-gray-400 hover:text-red-600 border border-transparent hover:border-gray-100"
                                                                         >
                                                                             <Edit2 size={16} />
                                                                         </button>
@@ -455,7 +443,7 @@ const AdminDashboard = () => {
                                             type="text"
                                             value={modalMode === "product" ? formData.name : formData.title}
                                             onChange={(e) => setFormData({ ...formData, [modalMode === "product" ? 'name' : 'title']: e.target.value })}
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
                                             placeholder={modalMode === "product" ? "e.g. Minimalist Tote" : "e.g. Summer Series"}
                                         />
                                     </div>
@@ -463,14 +451,14 @@ const AdminDashboard = () => {
                                     {modalMode === "product" ? (
                                         <>
                                             <div>
-                                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Price ($)</label>
+                                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Price (KES)</label>
                                                 <input
                                                     required
                                                     type="number"
                                                     step="0.01"
                                                     value={formData.price}
                                                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
                                                     placeholder="29.99"
                                                 />
                                             </div>
@@ -481,7 +469,7 @@ const AdminDashboard = () => {
                                                     type="text"
                                                     value={formData.category}
                                                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
                                                     placeholder="Tops, Shoes, etc."
                                                 />
                                             </div>
@@ -494,7 +482,7 @@ const AdminDashboard = () => {
                                                 type="text"
                                                 value={formData.tag}
                                                 onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
-                                                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                                                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
                                                 placeholder="Seasonal, New, etc."
                                             />
                                         </div>
@@ -508,7 +496,7 @@ const AdminDashboard = () => {
                                                 type="url"
                                                 value={formData.image_url}
                                                 onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                                                className="flex-grow bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+                                                className="flex-grow bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
                                                 placeholder="https://images.unsplash.com/..."
                                             />
                                             <div className="w-12 h-12 rounded-xl bg-gray-100 flex-shrink-0 flex items-center justify-center overflow-hidden border border-gray-200">
@@ -528,7 +516,7 @@ const AdminDashboard = () => {
                                             rows="3"
                                             value={formData.description}
                                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-indigo-500 focus:bg-white transition-all resize-none"
+                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all resize-none"
                                             placeholder="Tell us about this item..."
                                         />
                                     </div>

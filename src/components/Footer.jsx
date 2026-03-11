@@ -11,18 +11,18 @@ const Footer = () => {
                 </div>
 
                 <div className="container mx-auto px-6 relative z-10 flex flex-col items-center text-center">
-                    <span className="text-indigo-400 font-bold tracking-[0.3em] uppercase text-xs mb-3">The Loop</span>
+                    <span className="text-red-400 font-bold tracking-[0.3em] uppercase text-xs mb-3">The Loop</span>
                     <h3 className="text-5xl md:text-6xl font-black text-white tracking-tighter leading-none mb-10 max-w-2xl">
-                        Unlock <span className="text-indigo-500">Early Access</span> & 10% Off.
+                        Unlock <span className="text-red-500">Early Access</span> & 10% Off.
                     </h3>
 
                     <div className="relative w-full max-w-md">
                         <input
                             type="email"
                             placeholder="Your email address"
-                            className="w-full bg-white/5 border border-white/10 rounded-full py-4 px-8 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                            className="w-full bg-white/5 border border-white/10 rounded-full py-4 px-8 text-white focus:outline-none focus:border-red-500 transition-colors"
                         />
-                        <button className="absolute right-2 top-2 bg-indigo-600 text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-indigo-700 transition-colors">
+                        <button className="absolute right-2 top-2 bg-red-600 text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-red-700 transition-colors">
                             Subscribe
                         </button>
                     </div>
@@ -42,13 +42,13 @@ const Footer = () => {
                             Redefining everyday essentials with a focus on sustainable quality and timeless silhouettes.
                         </p>
                         <div className="flex gap-4">
-                            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-indigo-600 transition-all duration-300">
+                            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-600 transition-all duration-300">
                                 <Instagram size={18} />
                             </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-indigo-600 transition-all duration-300">
+                            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-600 transition-all duration-300">
                                 <Twitter size={18} />
                             </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-indigo-600 transition-all duration-300">
+                            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-600 transition-all duration-300">
                                 <Facebook size={18} />
                             </a>
                         </div>
