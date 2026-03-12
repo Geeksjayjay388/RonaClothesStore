@@ -1,10 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import LoadingScreen from "../components/LoadingScreen";
 import ownerImage from "../assets/image.png";
 import logoName from "../assets/logoName.png";
 
 const AboutPage = () => {
+    const [imagesLoaded, setImagesLoaded] = useState(false);
+
+    useEffect(() => {
+        const imagesToLoad = [ownerImage, logoName, "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=2000"];
+        let loadedCount = 0;
+
+        imagesToLoad.forEach((src) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => {
+                loadedCount++;
+                if (loadedCount === imagesToLoad.length) {
+                    setImagesLoaded(true);
+                }
+            };
+            img.onerror = () => {
+                loadedCount++;
+                if (loadedCount === imagesToLoad.length) {
+                    setImagesLoaded(true);
+                }
+            };
+        });
+    }, []);
+
+    if (!imagesLoaded) {
+        return <LoadingScreen />;
+    }
+
     return (
         <div className="min-h-screen flex flex-col bg-white selection:bg-black selection:text-white">
             <Navbar />

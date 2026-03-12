@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Instagram, Linkedin, Music2, ArrowRight, Send } from "lucide-react";
+import { Instagram, Linkedin, Music2, ArrowRight } from "lucide-react";
 import logoName from "../assets/logoName.png";
 
 const Footer = () => {
@@ -77,7 +77,6 @@ const Footer = () => {
                             <li><Link to="/store" className="hover:text-white transition-colors">All Products</Link></li>
                             <li><Link to="/store?cat=new" className="hover:text-white transition-colors">New Arrivals</Link></li>
                             <li><Link to="/store?cat=sale" className="hover:text-white transition-colors">Sale</Link></li>
-                            <li><Link to="/lookbook" className="hover:text-white transition-colors">Lookbook</Link></li>
                         </ul>
                     </div>
 
@@ -85,9 +84,6 @@ const Footer = () => {
                     <div>
                         <h4 className="text-lg font-bold mb-6">Support</h4>
                         <ul className="space-y-4 text-gray-400">
-                            <li><a href="#" className="hover:text-white transition-colors">Shipping Policy</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">Returns & Exchanges</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">FAQs</a></li>
                             <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
                         </ul>
                     </div>
@@ -95,7 +91,7 @@ const Footer = () => {
 
                 {/* Bottom Bar */}
                 <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-                    <p>&copy; {new Date().getFullYear()} CLO.THES Studio. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} RONA ELEMENTRA. All rights reserved.</p>
                     <div className="flex gap-8">
                         <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
                         <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
