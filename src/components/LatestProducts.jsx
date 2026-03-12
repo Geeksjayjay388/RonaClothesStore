@@ -3,11 +3,13 @@ import { ShoppingBag, Eye, ArrowRight, Loader2, MessageSquare } from "lucide-rea
 import { formatPrice } from "../lib/formatters";
 import { useCart } from "../context/CartContext";
 import { supabase } from "../lib/supabase";
+import ProductPreviewModal from "./ProductPreviewModal";
 
 const LatestProducts = () => {
     const { addToCart, orderOnWhatsApp } = useCart();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [previewProduct, setPreviewProduct] = useState(null);
 
     const fetchLatest = async () => {
         try {
@@ -58,7 +60,7 @@ const LatestProducts = () => {
                     </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-10">
                     {loading ? (
                         <div className="col-span-full flex flex-col items-center justify-center py-12">
                             <Loader2 className="animate-spin text-gray-900 mb-4" size={32} />
@@ -72,7 +74,10 @@ const LatestProducts = () => {
                         products.map((product) => (
                             <div key={product.id} className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
                                 {/* Image Container */}
-                                <div className="bg-gray-100 aspect-square overflow-hidden relative">
+                                <div
+                                    className="bg-gray-100 aspect-square overflow-hidden relative cursor-pointer"
+                                    onClick={() => setPreviewProduct(product)}
+                                >
                                     <img
                                         src={product.image_url || product.image}
                                         alt={product.name}
@@ -82,15 +87,15 @@ const LatestProducts = () => {
                                     <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300"></div>
 
                                     {/* Hover Overlay Actions */}
-                                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-                                        <button onClick={() => addToCart(product)} className="bg-white text-gray-900 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:bg-red-600 hover:text-white" title="Add to Cart">
-                                            <ShoppingBag size={20} />
+                                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 sm:gap-3">
+                                        <button onClick={(e) => { e.stopPropagation(); addToCart(product); }} className="bg-white text-gray-900 p-2 sm:p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:bg-red-600 hover:text-white" title="Add to Cart">
+                                            <ShoppingBag size={18} className="sm:w-5 sm:h-5" />
                                         </button>
-                                        <button onClick={() => orderOnWhatsApp(product)} className="bg-white text-[#25D366] p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75 hover:bg-[#25D366] hover:text-white" title="Order on WhatsApp">
-                                            <MessageSquare size={20} />
+                                        <button onClick={(e) => { e.stopPropagation(); orderOnWhatsApp(product); }} className="bg-white text-[#25D366] p-2 sm:p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75 hover:bg-[#25D366] hover:text-white" title="Order on WhatsApp">
+                                            <MessageSquare size={18} className="sm:w-5 sm:h-5" />
                                         </button>
-                                        <button className="bg-white text-gray-900 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-150 hover:bg-red-600 hover:text-white" title="Quick View">
-                                            <Eye size={20} />
+                                        <button onClick={(e) => { e.stopPropagation(); setPreviewProduct(product); }} className="bg-white text-gray-900 p-2 sm:p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-150 hover:bg-red-600 hover:text-white" title="Quick View">
+                                            <Eye size={18} className="sm:w-5 sm:h-5" />
                                         </button>
                                     </div>
 
@@ -101,13 +106,13 @@ const LatestProducts = () => {
                                 </div>
 
                                 {/* Product Info */}
-                                <div className="p-6 flex flex-col flex-grow text-left">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <p className="text-xs text-red-500 font-bold uppercase tracking-widest">{product.category}</p>
-                                        <p className="font-bold text-gray-900">{formatPrice(product.price)}</p>
+                                <div className="p-4 sm:p-6 flex flex-col flex-grow text-left">
+                                    <div className="flex justify-between items-start mb-1 sm:mb-2">
+                                        <p className="text-[10px] sm:text-xs text-red-500 font-bold uppercase tracking-widest">{product.category}</p>
+                                        <p className="font-bold text-xs sm:text-base text-gray-900">{formatPrice(product.price)}</p>
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">{product.name}</h3>
-                                    <p className="text-sm text-gray-500 mb-6 flex-grow line-clamp-2">{product.description || "Everyday comfort with premium materials."}</p>
+                                    <h3 className="text-sm sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-red-600 transition-colors line-clamp-1">{product.name}</h3>
+                                    <p className="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6 flex-grow line-clamp-2">{product.description || "Everyday comfort with premium materials."}</p>
 
                                     <button onClick={() => addToCart(product)} className="w-full bg-gray-50 text-gray-900 py-3 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-colors border border-gray-200 hover:border-gray-900 text-sm tracking-wide"
                                     >
@@ -124,6 +129,12 @@ const LatestProducts = () => {
                     View All Products
                 </button>
             </div>
+
+            <ProductPreviewModal
+                product={previewProduct}
+                isOpen={!!previewProduct}
+                onClose={() => setPreviewProduct(null)}
+            />
         </section>
     );
 };

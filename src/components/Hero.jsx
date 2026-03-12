@@ -72,7 +72,7 @@ const Hero = () => {
                             className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-red-600 px-10 py-4 font-bold text-white transition-all duration-300 hover:bg-red-700 hover:shadow-xl hover:shadow-red-600/30"
                         >
                             <span className="absolute inset-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></span>
-                            <span className="relative">Shop Collection</span>
+                            <span className="relative">Shop Store</span>
                         </Link>
 
                         <Link

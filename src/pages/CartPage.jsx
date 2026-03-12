@@ -34,7 +34,7 @@ const CartPage = () => {
                             <div className="py-24 text-center border border-dashed border-gray-200 rounded-2xl bg-gray-50">
                                 <p className="text-2xl font-bold text-gray-400 mb-6">Your bag is completely empty.</p>
                                 <Link to="/store" className="inline-flex items-center gap-2 bg-gray-900 text-white px-8 py-4 rounded-full font-bold hover:bg-red-600 transition-colors tracking-wide">
-                                    Discover The Collection <ArrowRight size={18} />
+                                    Continue Shopping <ArrowRight size={18} />
                                 </Link>
                             </div>
                         ) : (

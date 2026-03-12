@@ -11,7 +11,7 @@ const Navbar = () => {
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
     const { cartCount } = useCart();
-    const { user, isAdmin, signOut } = useAuth();
+    const { user, isAdmin, signOut, profile } = useAuth();
 
     // Close mobile menu on location change
     useEffect(() => {
@@ -57,7 +57,6 @@ const Navbar = () => {
                 <div className="hidden lg:flex gap-10 items-center">
                     <Link to="/" className={navLinkClass("/")}>Home</Link>
                     <Link to="/store" className={navLinkClass("/store")}>Store</Link>
-                    <Link to="/collections" className={navLinkClass("/collections")}>Collections</Link>
                     <Link to="/about" className={navLinkClass("/about")}>Our Story</Link>
 
                     {isAdmin && (
@@ -81,10 +80,14 @@ const Navbar = () => {
                         {user ? (
                             <Link to="/profile" className="flex items-center gap-2 hover:text-red-600 transition-colors group">
                                 <span className="text-sm font-bold tracking-tight text-gray-700 group-hover:text-red-600">
-                                    {user.user_metadata?.first_name || "Profile"}
+                                    {profile?.first_name || user.user_metadata?.first_name || "Profile"}
                                 </span>
-                                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 group-hover:border-pink-200 group-hover:bg-pink-50 transition-all">
-                                    <User size={18} />
+                                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 group-hover:border-pink-200 group-hover:bg-pink-50 transition-all overflow-hidden">
+                                    {profile?.avatar_url ? (
+                                        <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <User size={18} />
+                                    )}
                                 </div>
                             </Link>
                         ) : (
@@ -150,7 +153,6 @@ const Navbar = () => {
                                         <div className="flex flex-col gap-6">
                                             <Link to="/" className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">Home</Link>
                                             <Link to="/store" className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">Store</Link>
-                                            <Link to="/collections" className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">Collections</Link>
                                             <Link to="/about" className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">Our Story</Link>
                                             {isAdmin && (
                                                 <Link to="/admin" className="text-2xl font-black text-red-600 lowercase tracking-tighter">Admin Dashboard</Link>
@@ -162,10 +164,14 @@ const Navbar = () => {
                                                 <>
                                                     <Link to="/profile" className="flex items-center justify-between group">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
-                                                                <User size={20} />
+                                                            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 overflow-hidden">
+                                                                {profile?.avatar_url ? (
+                                                                    <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                                                ) : (
+                                                                    <User size={20} />
+                                                                )}
                                                             </div>
-                                                            <span className="font-bold text-gray-900">{user.user_metadata?.first_name || "Account"}</span>
+                                                            <span className="font-bold text-gray-900">{profile?.first_name || user.user_metadata?.first_name || "Account"}</span>
                                                         </div>
                                                         <ArrowRight size={16} className="text-gray-400 group-hover:text-red-600 transition-colors" />
                                                     </Link>

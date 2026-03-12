@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/homepage";
 import StorePage from "./pages/StorePage";
-import CollectionsPage from "./pages/CollectionsPage";
 import AboutPage from "./pages/AboutPage";
 import ProfilePage from "./pages/ProfilePage";
 import CartPage from "./pages/CartPage";
@@ -60,33 +59,34 @@ const AppContent = () => {
 
   return (
     <Router>
-      <Toaster position="bottom-right" />
-      <PrivacyBanner />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/store" element={<StorePage />} />
-        <Route path="/collections" element={<CollectionsPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route
-          path="/admin"
-          element={
-            <AdminRoute>
-              <AdminDashboard />
-            </AdminRoute>
-          }
-        />
-      </Routes>
+      <div className="overflow-x-hidden min-h-screen">
+        <Toaster position="bottom-right" />
+        <PrivacyBanner />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/store" element={<StorePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+        </Routes>
+      </div>
     </Router>
   );
 };

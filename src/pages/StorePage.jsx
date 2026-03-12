@@ -5,11 +5,13 @@ import { useCart } from "../context/CartContext";
 import { supabase } from "../lib/supabase";
 import { Search, ShoppingBag, Eye, Loader2, X, MessageSquare } from "lucide-react";
 import { formatPrice } from "../lib/formatters";
+import ProductPreviewModal from "../components/ProductPreviewModal";
 
 const StorePage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
+    const [previewProduct, setPreviewProduct] = useState(null);
     const { addToCart, orderOnWhatsApp } = useCart();
 
     const fetchProducts = async () => {
@@ -97,10 +99,13 @@ const StorePage = () => {
                             <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Curating your store...</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+                        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                             {filteredProducts.map((product) => (
                                 <div key={product.id} className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
-                                    <div className="bg-gray-100 aspect-square overflow-hidden relative">
+                                    <div
+                                        className="bg-gray-100 aspect-square overflow-hidden relative cursor-pointer"
+                                        onClick={() => setPreviewProduct(product)}
+                                    >
                                         <img
                                             src={product.image_url || product.image}
                                             alt={product.name}
@@ -108,24 +113,30 @@ const StorePage = () => {
                                         />
                                         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300"></div>
 
-                                        {/* Quick Order WhatsApp Overlay */}
-                                        <div className="absolute top-4 right-4 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                                        <div className="absolute top-2 right-2 sm:top-4 sm:right-4 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 flex flex-col gap-2">
                                             <button
-                                                onClick={() => orderOnWhatsApp(product)}
-                                                className="bg-white/90 backdrop-blur-md text-[#25D366] p-3 rounded-full shadow-xl hover:bg-[#25D366] hover:text-white transition-all"
+                                                onClick={(e) => { e.stopPropagation(); setPreviewProduct(product); }}
+                                                className="bg-white/90 backdrop-blur-md text-gray-900 p-2 sm:p-3 rounded-full shadow-xl hover:bg-gray-900 hover:text-white transition-all"
+                                                title="Quick View"
+                                            >
+                                                <Eye size={18} className="sm:w-5 sm:h-5" />
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); orderOnWhatsApp(product); }}
+                                                className="bg-white/90 backdrop-blur-md text-[#25D366] p-2 sm:p-3 rounded-full shadow-xl hover:bg-[#25D366] hover:text-white transition-all"
                                                 title="Direct WhatsApp Order"
                                             >
-                                                <MessageSquare size={18} />
+                                                <MessageSquare size={18} className="sm:w-5 sm:h-5" />
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="p-6 flex flex-col flex-grow text-left">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <p className="text-xs text-red-500 font-bold uppercase tracking-widest">{product.category}</p>
-                                            <p className="font-bold text-gray-900">{formatPrice(product.price)}</p>
+                                    <div className="p-4 sm:p-6 flex flex-col flex-grow text-left">
+                                        <div className="flex justify-between items-start mb-1 sm:mb-2">
+                                            <p className="text-[10px] sm:text-xs text-red-500 font-bold uppercase tracking-widest">{product.category}</p>
+                                            <p className="font-bold text-xs sm:text-base text-gray-900">{formatPrice(product.price)}</p>
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">{product.name}</h3>
-                                        <p className="text-sm text-gray-500 mb-6 flex-grow line-clamp-2">{product.description}</p>
+                                        <h3 className="text-sm sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-red-600 transition-colors line-clamp-1">{product.name}</h3>
+                                        <p className="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6 flex-grow line-clamp-2">{product.description}</p>
 
                                         <button
                                             onClick={() => addToCart(product)}
@@ -146,6 +157,12 @@ const StorePage = () => {
                 </div>
             </main>
             <Footer />
+
+            <ProductPreviewModal
+                product={previewProduct}
+                isOpen={!!previewProduct}
+                onClose={() => setPreviewProduct(null)}
+            />
         </div>
     );
 };

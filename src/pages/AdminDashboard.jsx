@@ -5,25 +5,26 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import { supabase } from "../lib/supabase";
 import { toast } from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState("overview");
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([]);
-    const [collections, setCollections] = useState([]);
+    const { profile } = useAuth();
 
     // Form States
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalMode, setModalMode] = useState("product"); // "product" or "collection"
+    const [modalMode, setModalMode] = useState("product");
     const [editItem, setEditItem] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
-        title: "", // for collections
         price: "",
         description: "",
         category: "",
-        tag: "", // for collections
         image_url: "",
+        images: [], // Existing image URLs
+        imageFiles: [], // New local files to upload
     });
 
     useEffect(() => {
@@ -37,39 +38,24 @@ const AdminDashboard = () => {
             })
             .subscribe();
 
-        const collectionsChannel = supabase
-            .channel('admin-collections-changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'collections' }, () => {
-                fetchData();
-            })
-            .subscribe();
-
         return () => {
             supabase.removeChannel(productsChannel);
-            supabase.removeChannel(collectionsChannel);
         };
     }, []);
 
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [prodRes, colRes] = await Promise.all([
-                supabase.from('products').select('*').order('created_at', { ascending: false }),
-                supabase.from('collections').select('*').order('created_at', { ascending: false })
-            ]);
+            const { data, error } = await supabase
+                .from('products')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-            if (prodRes.error) {
-                console.error("Products fetch error:", prodRes.error);
+            if (error) {
+                console.error("Products fetch error:", error);
                 toast.error("Products table fetch error");
-            } else if (prodRes.data) {
-                setProducts(prodRes.data);
-            }
-
-            if (colRes.error) {
-                console.error("Collections fetch error:", colRes.error);
-                toast.error("Collections table fetch error");
-            } else if (colRes.data) {
-                setCollections(colRes.data);
+            } else if (data) {
+                setProducts(data);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -82,20 +68,52 @@ const AdminDashboard = () => {
     const handleSave = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const table = modalMode === "product" ? "products" : "collections";
+        const table = "products";
 
         try {
-            const payload = modalMode === "product" ? {
+            let uploadedUrls = [...(formData.images || [])];
+            let primaryImageUrl = formData.image_url;
+
+            // Handle new image uploads if there are any
+            if (formData.imageFiles && formData.imageFiles.length > 0) {
+                toast.loading("Uploading images...", { id: 'upload-toast' });
+
+                for (const file of formData.imageFiles) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+                    const { error: uploadError, data } = await supabase.storage
+                        .from('product-images')
+                        .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+                    if (uploadError) {
+                        toast.error(`Upload failed: ${file.name}`);
+                        console.error("Storage upload error:", uploadError);
+                        continue;
+                    }
+
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('product-images')
+                        .getPublicUrl(fileName);
+
+                    uploadedUrls.push(publicUrl);
+                }
+
+                toast.dismiss('upload-toast');
+
+                // If it's the first time adding images, set the primary image
+                if (!primaryImageUrl && uploadedUrls.length > 0) {
+                    primaryImageUrl = uploadedUrls[0];
+                }
+            }
+
+            const payload = {
                 name: formData.name,
                 price: parseFloat(formData.price),
                 description: formData.description,
                 category: formData.category,
-                image_url: formData.image_url,
-            } : {
-                title: formData.title,
-                description: formData.description,
-                tag: formData.tag,
-                image_url: formData.image_url,
+                image_url: primaryImageUrl || (uploadedUrls.length > 0 ? uploadedUrls[0] : ""),
+                images: uploadedUrls,
             };
 
             let error;
@@ -112,9 +130,10 @@ const AdminDashboard = () => {
             toast.success(`${modalMode.charAt(0).toUpperCase() + modalMode.slice(1)} saved successfully!`);
             setIsModalOpen(false);
             setEditItem(null);
-            setFormData({ name: "", title: "", price: "", description: "", category: "", tag: "", image_url: "" });
+            setFormData({ name: "", price: "", description: "", category: "", image_url: "", images: [], imageFiles: [] });
             fetchData();
         } catch (error) {
+            toast.dismiss('upload-toast');
             toast.error(error.message || "Error saving item");
             console.error(error);
         } finally {
@@ -143,12 +162,12 @@ const AdminDashboard = () => {
         setEditItem(item);
         setFormData({
             name: item.name || "",
-            title: item.title || "",
             price: item.price || "",
             description: item.description || "",
             category: item.category || "",
-            tag: item.tag || "",
             image_url: item.image_url || "",
+            images: item.images || [],
+            imageFiles: [],
         });
         setIsModalOpen(true);
     };
@@ -156,12 +175,10 @@ const AdminDashboard = () => {
     const sidebarItems = [
         { id: "overview", label: "Overview", icon: LayoutDashboard },
         { id: "products", label: "Products", icon: Package },
-        { id: "collections", label: "Collections", icon: Layers },
     ];
 
     const stats = [
         { label: "Inventory", value: products.length, icon: Package, trend: `+${products.length}`, color: "red" },
-        { label: "Collections", value: collections.length, icon: Layers, trend: `+${collections.length}`, color: "pink" },
         { label: "Retail Value", value: formatPrice(products.reduce((acc, p) => acc + parseFloat(p.price), 0)), icon: DollarSign, trend: "Live", color: "red" },
     ];
 
@@ -175,7 +192,23 @@ const AdminDashboard = () => {
                     <div className="flex flex-col lg:flex-row gap-8">
 
                         {/* --- SIDEBAR --- */}
-                        <aside className="w-full lg:w-64 flex flex-col gap-4">
+                        <aside className="w-full lg:w-64 flex flex-col gap-4 text-left">
+                            <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm hidden lg:block">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-100 overflow-hidden shrink-0">
+                                        {profile?.avatar_url ? (
+                                            <img src={profile.avatar_url} alt="Admin" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span className="text-white font-black text-xl">{profile?.first_name?.[0] || "A"}</span>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col overflow-hidden">
+                                        <h3 className="font-black text-gray-900 leading-none truncate">{profile?.first_name} {profile?.last_name}</h3>
+                                        <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest mt-1">Archive Admin</p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="bg-white border border-gray-200 rounded-3xl p-3 shadow-sm">
                                 <nav className="space-y-1">
                                     {sidebarItems.map((item) => {
@@ -220,21 +253,21 @@ const AdminDashboard = () => {
                                     <h1 className="text-4xl font-black tracking-tighter text-gray-900 lowercase">
                                         {activeTab}<span className="text-red-600">.</span>
                                     </h1>
-                                    <p className="text-gray-500 font-medium text-sm mt-1">Manage your storefront products and collections.</p>
+                                    <p className="text-gray-500 font-medium text-sm mt-1">Manage your storefront products.</p>
                                 </div>
 
                                 <div className="flex items-center gap-3">
-                                    {(activeTab === "products" || activeTab === "collections") && (
+                                    {activeTab === "products" && (
                                         <button
                                             onClick={() => {
-                                                setModalMode(activeTab === "products" ? "product" : "collection");
+                                                setModalMode("product");
                                                 setEditItem(null);
                                                 setIsModalOpen(true);
                                             }}
                                             className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-red-100 text-sm whitespace-nowrap"
                                         >
                                             <Plus size={18} />
-                                            <span>Add {activeTab === "products" ? "Product" : "Collection"}</span>
+                                            <span>Add Product</span>
                                         </button>
                                     )}
                                 </div>
@@ -323,7 +356,7 @@ const AdminDashboard = () => {
                                     </motion.div>
                                 )}
 
-                                {(activeTab === "products" || activeTab === "collections") && (
+                                {activeTab === "products" && (
                                     <motion.div
                                         key={activeTab}
                                         initial={{ opacity: 0, x: 20 }}
@@ -343,31 +376,31 @@ const AdminDashboard = () => {
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-gray-50">
-                                                    {(activeTab === "products" ? products : collections).length === 0 ? (
+                                                    {products.length === 0 ? (
                                                         <tr>
                                                             <td colSpan="5" className="px-8 py-12 text-center text-gray-400 font-medium">
-                                                                No {activeTab} found. Click 'Add {activeTab === "products" ? "Product" : "Collection"}' to create one.
+                                                                No products found. Click 'Add Product' to create one.
                                                             </td>
                                                         </tr>
                                                     ) : (
-                                                        (activeTab === "products" ? products : collections).map((item) => (
-                                                            <tr key={item.id} className="group hover:bg-gray-50/50 transition-colors">
+                                                        products.map((product) => (
+                                                            <tr key={product.id} className="group hover:bg-gray-50/50 transition-colors">
                                                                 <td className="px-8 py-4">
                                                                     <div className="w-14 h-14 rounded-xl bg-gray-100 overflow-hidden">
                                                                         <img
-                                                                            src={item.image_url || item.image}
-                                                                            alt={item.name || item.title}
+                                                                            src={product.image_url || product.image}
+                                                                            alt={product.name}
                                                                             className="w-full h-full object-cover"
                                                                         />
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-8 py-4">
-                                                                    <h4 className="font-bold text-gray-900 group-hover:text-red-600 transition-colors truncate max-w-[200px]">{item.name || item.title}</h4>
-                                                                    <p className="text-xs text-gray-500 mt-0.5">{item.category || item.tag}</p>
+                                                                    <h4 className="font-bold text-gray-900 group-hover:text-red-600 transition-colors truncate max-w-[200px]">{product.name}</h4>
+                                                                    <p className="text-xs text-gray-500 mt-0.5">{product.category}</p>
                                                                 </td>
                                                                 <td className="px-8 py-4">
                                                                     <span className="font-bold text-gray-900">
-                                                                        {item.price ? formatPrice(item.price) : "—"}
+                                                                        {formatPrice(product.price)}
                                                                     </span>
                                                                 </td>
                                                                 <td className="px-8 py-4">
@@ -378,14 +411,16 @@ const AdminDashboard = () => {
                                                                 <td className="px-8 py-4 text-right">
                                                                     <div className="flex items-center justify-end gap-2">
                                                                         <button
-                                                                            onClick={() => openEditModal(item, activeTab === "products" ? "product" : "collection")}
+                                                                            onClick={() => openEditModal(product, "product")}
                                                                             className="p-2 hover:bg-white rounded-lg transition-colors text-gray-400 hover:text-red-600 border border-transparent hover:border-gray-100"
+                                                                            title="Edit"
                                                                         >
                                                                             <Edit2 size={16} />
                                                                         </button>
                                                                         <button
-                                                                            onClick={() => handleDelete(item.id, activeTab === "products" ? "products" : "collections")}
+                                                                            onClick={() => handleDelete(product.id, "products")}
                                                                             className="p-2 hover:bg-red-50 rounded-lg transition-colors text-gray-400 hover:text-red-600 border border-transparent hover:border-red-100"
+                                                                            title="Delete"
                                                                         >
                                                                             <Trash2 size={16} />
                                                                         </button>
@@ -425,7 +460,7 @@ const AdminDashboard = () => {
                         >
                             <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
                                 <h3 className="text-xl font-black tracking-tight">
-                                    {editItem ? "Edit" : "Add New"} {modalMode === "product" ? "Product" : "Collection"}
+                                    {editItem ? "Edit" : "Add New"} Product
                                 </h3>
                                 <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-white rounded-xl transition-colors text-gray-400 hover:text-gray-900">
                                     <X size={20} />
@@ -436,75 +471,98 @@ const AdminDashboard = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="md:col-span-2">
                                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
-                                            {modalMode === "product" ? "Product Name" : "Collection Title"}
+                                            Product Name
                                         </label>
                                         <input
                                             required
                                             type="text"
-                                            value={modalMode === "product" ? formData.name : formData.title}
-                                            onChange={(e) => setFormData({ ...formData, [modalMode === "product" ? 'name' : 'title']: e.target.value })}
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
-                                            placeholder={modalMode === "product" ? "e.g. Minimalist Tote" : "e.g. Summer Series"}
+                                            placeholder="e.g. Minimalist Tote"
                                         />
                                     </div>
 
-                                    {modalMode === "product" ? (
-                                        <>
-                                            <div>
-                                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Price (KES)</label>
-                                                <input
-                                                    required
-                                                    type="number"
-                                                    step="0.01"
-                                                    value={formData.price}
-                                                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
-                                                    placeholder="29.99"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Category</label>
-                                                <input
-                                                    required
-                                                    type="text"
-                                                    value={formData.category}
-                                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
-                                                    placeholder="Tops, Shoes, etc."
-                                                />
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Tag</label>
-                                            <input
-                                                required
-                                                type="text"
-                                                value={formData.tag}
-                                                onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
-                                                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
-                                                placeholder="Seasonal, New, etc."
-                                            />
-                                        </div>
-                                    )}
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Price (KES)</label>
+                                        <input
+                                            required
+                                            type="number"
+                                            step="0.01"
+                                            value={formData.price}
+                                            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
+                                            placeholder="29.99"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Category</label>
+                                        <input
+                                            required
+                                            type="text"
+                                            value={formData.category}
+                                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
+                                            placeholder="Tops, Shoes, etc."
+                                        />
+                                    </div>
 
                                     <div className="md:col-span-2">
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Image URL</label>
-                                        <div className="flex gap-3">
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                                            Images (Select multiple files)
+                                        </label>
+                                        <div className="flex flex-col gap-3">
+                                            {/* File Input */}
                                             <input
-                                                required
-                                                type="url"
-                                                value={formData.image_url}
-                                                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                                                className="flex-grow bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
-                                                placeholder="https://images.unsplash.com/..."
+                                                type="file"
+                                                multiple
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const files = Array.from(e.target.files);
+                                                    setFormData({ ...formData, imageFiles: files });
+                                                }}
+                                                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-red-50 file:text-red-600 hover:file:bg-red-100 cursor-pointer"
                                             />
-                                            <div className="w-12 h-12 rounded-xl bg-gray-100 flex-shrink-0 flex items-center justify-center overflow-hidden border border-gray-200">
-                                                {formData.image_url ? (
-                                                    <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <ImageIcon className="text-gray-300" size={20} />
+
+                                            {/* Preview uploaded/selected images */}
+                                            <div className="flex flex-wrap gap-2 mt-2">
+                                                {/* Existing Images */}
+                                                {formData.images && formData.images.map((url, idx) => (
+                                                    <div key={`existing-${idx}`} className="relative w-16 h-16 rounded-xl overflow-hidden border border-gray-200">
+                                                        <img src={url} alt={`Existing ${idx}`} className="w-full h-full object-cover" />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const newImages = [...formData.images];
+                                                                newImages.splice(idx, 1);
+                                                                setFormData({ ...formData, images: newImages });
+                                                            }}
+                                                            className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-0.5 hover:bg-red-700 w-4 h-4 flex items-center justify-center shadow-lg"
+                                                        >
+                                                            <X size={10} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                                {/* Fallback to single image_url if images array is empty (legacy support) */}
+                                                {(!formData.images || formData.images.length === 0) && formData.image_url && (
+                                                    <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-gray-200">
+                                                        <img src={formData.image_url} alt="Legacy primary" className="w-full h-full object-cover" />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setFormData({ ...formData, image_url: "" })}
+                                                            className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-0.5 hover:bg-red-700 w-4 h-4 flex items-center justify-center shadow-lg"
+                                                        >
+                                                            <X size={10} />
+                                                        </button>
+                                                    </div>
                                                 )}
+                                                {/* New Local Files Preview */}
+                                                {formData.imageFiles && formData.imageFiles.map((file, idx) => (
+                                                    <div key={`new-${idx}`} className="relative w-16 h-16 rounded-xl overflow-hidden border border-emerald-200">
+                                                        <img src={URL.createObjectURL(file)} alt={`New ${idx}`} className="w-full h-full object-cover" />
+                                                        <span className="absolute bottom-0 left-0 right-0 bg-emerald-500/80 text-white text-[8px] font-bold text-center py-0.5 uppercase tracking-widest backdrop-blur-sm">New</span>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </div>
                                     </div>
@@ -536,7 +594,7 @@ const AdminDashboard = () => {
                                         className="flex-[2] py-4 bg-gray-900 hover:bg-black text-white rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-xl shadow-gray-200 flex items-center justify-center gap-2"
                                     >
                                         {loading ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-                                        <span>{editItem ? "Update" : "Create"} {modalMode}</span>
+                                        <span>{editItem ? "Update" : "Create"} Product</span>
                                     </button>
                                 </div>
                             </form>

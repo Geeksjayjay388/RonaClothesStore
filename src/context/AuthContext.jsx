@@ -16,8 +16,24 @@ export const AuthProvider = ({ children }) => {
     const [session, setSession] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [profile, setProfile] = useState(null);
 
     useEffect(() => {
+        const fetchProfile = async (userId) => {
+            if (!userId) {
+                setProfile(null);
+                return;
+            }
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', userId)
+                .single();
+            if (!error) {
+                setProfile(data);
+            }
+        };
+
         // Check for active session on load
         const getInitialSession = async () => {
             const { data: { session }, error } = await supabase.auth.getSession();
@@ -28,6 +44,7 @@ export const AuthProvider = ({ children }) => {
             const currentUser = session?.user ?? null;
             setUser(currentUser);
             setIsAdmin(currentUser?.email === 'officialsihul@gmail.com' || currentUser?.user_metadata?.role === 'admin');
+            if (currentUser) fetchProfile(currentUser.id);
             setLoading(false);
         };
 
@@ -39,6 +56,8 @@ export const AuthProvider = ({ children }) => {
             const currentUser = session?.user ?? null;
             setUser(currentUser);
             setIsAdmin(currentUser?.email === 'officialsihul@gmail.com' || currentUser?.user_metadata?.role === 'admin');
+            if (currentUser) fetchProfile(currentUser.id);
+            else setProfile(null);
             setLoading(false);
         });
 
@@ -74,6 +93,7 @@ export const AuthProvider = ({ children }) => {
         signIn,
         signOut,
         isAdmin,
+        profile,
     };
 
     return (

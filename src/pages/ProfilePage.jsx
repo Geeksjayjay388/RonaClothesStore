@@ -110,6 +110,60 @@ const ProfilePage = () => {
         }
     };
 
+    const fileInputRef = React.useRef(null);
+
+    const handleAvatarUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validation
+        if (!file.type.startsWith('image/')) {
+            toast.error("Please upload an image file");
+            return;
+        }
+        if (file.size > 2 * 1024 * 1024) { // 2MB limit
+            toast.error("Image must be less than 2MB");
+            return;
+        }
+
+        setSaving(true);
+        const toastId = toast.loading("Updating your archive image...");
+
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const filePath = `avatars/${fileName}`;
+
+            // 1. Upload to Supabase Storage
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, file, { cacheControl: '3600', upsert: true });
+
+            if (uploadError) throw uploadError;
+
+            // 2. Get Public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(filePath);
+
+            // 3. Update Profile in Database
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ avatar_url: publicUrl })
+                .eq('id', user.id);
+
+            if (updateError) throw updateError;
+
+            setProfile(prev => ({ ...prev, avatar_url: publicUrl }));
+            toast.success("Profile image updated!", { id: toastId });
+        } catch (error) {
+            console.error("Avatar upload error:", error);
+            toast.error("Failed to upload image. Ensure you have permissions.", { id: toastId });
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const handleSaveProfile = async () => {
         if (!formData.first_name.trim()) {
             toast.error("First name is required");
@@ -197,6 +251,13 @@ const ProfilePage = () => {
                             <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
                                 {/* Avatar */}
                                 <div className="relative group">
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleAvatarUpload}
+                                        accept="image/*"
+                                        className="hidden"
+                                    />
                                     <div className="w-28 h-28 rounded-2xl bg-red-600 flex items-center justify-center overflow-hidden shadow-lg shadow-red-100 relative">
                                         {profile?.avatar_url ? (
                                             <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
@@ -207,7 +268,10 @@ const ProfilePage = () => {
                                         )}
                                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
                                     </div>
-                                    <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors">
+                                    <button
+                                        onClick={() => fileInputRef.current.click()}
+                                        className="absolute -bottom-2 -right-2 w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors"
+                                    >
                                         <Camera size={18} className="text-gray-600" />
                                     </button>
                                 </div>
