@@ -26,6 +26,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { supabase } from "../lib/supabase";
+import { formatPrice } from "../lib/formatters";
 
 const ProfilePage = () => {
     const { user, signOut, profile, refreshProfile } = useAuth();

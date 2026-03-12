@@ -88,10 +88,6 @@ const CartPage = () => {
                                     <span>Subtotal</span>
                                     <span className="font-bold text-gray-900">{formatPrice(subtotal)}</span>
                                 </div>
-                                <div className="flex justify-between items-center text-lg">
-                                    <span>Shipping</span>
-                                    <span className="font-bold text-red-600 uppercase tracking-widest text-sm">Free</span>
-                                </div>
 
                                 <div className="border-t border-gray-200 pt-6 mt-6">
                                     <div className="flex justify-between items-end">
