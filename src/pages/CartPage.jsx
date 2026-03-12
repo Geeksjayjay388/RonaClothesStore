@@ -9,8 +9,8 @@ import { useCart } from "../context/CartContext";
 const CartPage = () => {
     const { cartItems, updateQuantity, removeItem, checkoutToWhatsApp } = useCart();
     const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    const shipping = 250;
-    const total = subtotal + (cartItems.length > 0 ? shipping : 0);
+    const shipping = 0;
+    const total = subtotal;
 
 
     return (
@@ -44,7 +44,7 @@ const CartPage = () => {
 
                                         {/* Image */}
                                         <div className="w-32 h-44 sm:w-40 sm:h-52 bg-gray-100 overflow-hidden flex-shrink-0">
-                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                            <img src={item.image_url || item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                         </div>
 
                                         {/* Item Details */}
@@ -90,7 +90,7 @@ const CartPage = () => {
                                 </div>
                                 <div className="flex justify-between items-center text-lg">
                                     <span>Shipping</span>
-                                    <span className="font-bold text-gray-900">{cartItems.length > 0 ? formatPrice(shipping) : formatPrice(0)}</span>
+                                    <span className="font-bold text-red-600 uppercase tracking-widest text-sm">Free</span>
                                 </div>
 
                                 <div className="border-t border-gray-200 pt-6 mt-6">

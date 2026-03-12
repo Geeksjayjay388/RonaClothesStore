@@ -89,8 +89,7 @@ export const CartProvider = ({ children }) => {
 
     const checkoutToWhatsApp = () => {
         const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-        const shipping = 250;
-        const total = subtotal + shipping;
+        const total = subtotal;
 
         let itemsList = cartItems.map(item =>
             `• ${item.name} (${item.size}/${item.color}) x${item.quantity} - ${formatPrice(item.price * item.quantity)}`
@@ -99,8 +98,6 @@ export const CartProvider = ({ children }) => {
         const message = encodeURIComponent(
             `Hello RONA, I'd like to place an order:\n\n` +
             `${itemsList}\n\n` +
-            `*Subtotal:* ${formatPrice(subtotal)}\n` +
-            `*Shipping:* ${formatPrice(shipping)}\n` +
             `*Total:* ${formatPrice(total)}\n\n` +
             `Please confirm my order.`
         );
