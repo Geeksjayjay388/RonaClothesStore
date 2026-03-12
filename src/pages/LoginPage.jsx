@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
+import LoginBg from "../assets/login-bg.png";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
@@ -56,7 +57,7 @@ const LoginPage = () => {
             {/* Left Side: Dynamic Image Area */}
             <div
                 className="hidden lg:block lg:w-1/2 bg-gray-900 bg-cover bg-center bg-no-repeat relative"
-                style={{ backgroundImage: "url('/src/assets/login-bg.png')" }}
+                style={{ backgroundImage: `url(${LoginBg})` }}
             >
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent"></div>
 

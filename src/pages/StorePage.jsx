@@ -3,14 +3,14 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
 import { supabase } from "../lib/supabase";
-import { Search, ShoppingBag, Eye, Loader2, X } from "lucide-react";
+import { Search, ShoppingBag, Eye, Loader2, X, MessageSquare } from "lucide-react";
 import { formatPrice } from "../lib/formatters";
 
 const StorePage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
-    const { addToCart } = useCart();
+    const { addToCart, orderOnWhatsApp } = useCart();
 
     const fetchProducts = async () => {
         try {
@@ -107,6 +107,17 @@ const StorePage = () => {
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                                         />
                                         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300"></div>
+
+                                        {/* Quick Order WhatsApp Overlay */}
+                                        <div className="absolute top-4 right-4 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                                            <button
+                                                onClick={() => orderOnWhatsApp(product)}
+                                                className="bg-white/90 backdrop-blur-md text-[#25D366] p-3 rounded-full shadow-xl hover:bg-[#25D366] hover:text-white transition-all"
+                                                title="Direct WhatsApp Order"
+                                            >
+                                                <MessageSquare size={18} />
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className="p-6 flex flex-col flex-grow text-left">
                                         <div className="flex justify-between items-start mb-2">

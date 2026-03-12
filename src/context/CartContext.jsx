@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { formatPrice } from "../lib/formatters";
 
 const CartContext = createContext();
 
@@ -72,8 +73,42 @@ export const CartProvider = ({ children }) => {
 
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
+    const whatsappNumber = "+25442424046";
+
+    const orderOnWhatsApp = (product, size = "M", color = "Default") => {
+        const message = encodeURIComponent(
+            `Hello Rona Elementra, I'd like to order:\n\n` +
+            `*Product:* ${product.name}\n` +
+            `*Price:* ${formatPrice(product.price)}\n` +
+            `*Size:* ${size}\n` +
+            `*Color:* ${color}\n\n` +
+            `Please let me know the next steps.`
+        );
+        window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
+    };
+
+    const checkoutToWhatsApp = () => {
+        const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        const shipping = 5.00;
+        const total = subtotal + shipping;
+
+        let itemsList = cartItems.map(item =>
+            `• ${item.name} (${item.size}/${item.color}) x${item.quantity} - ${formatPrice(item.price * item.quantity)}`
+        ).join('\n');
+
+        const message = encodeURIComponent(
+            `Hello Rona Elementra, I'd like to place an order:\n\n` +
+            `${itemsList}\n\n` +
+            `*Subtotal:* ${formatPrice(subtotal)}\n` +
+            `*Shipping:* ${formatPrice(shipping)}\n` +
+            `*Total:* ${formatPrice(total)}\n\n` +
+            `Please confirm my order.`
+        );
+        window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
+    };
+
     return (
-        <CartContext.Provider value={{ cartItems, addToCart, updateQuantity, removeItem, cartCount }}>
+        <CartContext.Provider value={{ cartItems, addToCart, updateQuantity, removeItem, cartCount, orderOnWhatsApp, checkoutToWhatsApp }}>
             {children}
         </CartContext.Provider>
     );

@@ -1,13 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ShoppingBag, ArrowRight, Trash2, Plus, Minus, Loader2 } from "lucide-react";
 import { formatPrice } from "../lib/formatters";
+import { MessageSquare, ArrowRight, Trash2, Plus, Minus, X } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
 
 const CartPage = () => {
-    const { cartItems, updateQuantity, removeItem } = useCart();
+    const { cartItems, updateQuantity, removeItem, checkoutToWhatsApp } = useCart();
     const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
     const shipping = 5.00;
     const total = subtotal + (cartItems.length > 0 ? shipping : 0);
@@ -103,10 +103,12 @@ const CartPage = () => {
                             </div>
 
                             <button
+                                onClick={checkoutToWhatsApp}
                                 disabled={cartItems.length === 0}
-                                className="w-full bg-black text-white py-5 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-red-600 transition-colors flex items-center justify-center gap-3 disabled:opacity-30 disabled:hover:bg-black group shadow-xl shadow-black/10"
+                                className="w-full bg-[#25D366] text-white py-5 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-[#128C7E] transition-colors flex items-center justify-center gap-3 disabled:opacity-30 disabled:hover:bg-[#25D366] group shadow-xl shadow-[#25D366]/10"
                             >
-                                Secure Checkout
+                                <MessageSquare size={20} className="group-hover:scale-110 transition-transform" />
+                                Order on WhatsApp
                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>
 

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { ShoppingBag, Eye, ArrowRight, Loader2 } from "lucide-react";
+import { ShoppingBag, Eye, ArrowRight, Loader2, MessageSquare } from "lucide-react";
 import { formatPrice } from "../lib/formatters";
 import { useCart } from "../context/CartContext";
 import { supabase } from "../lib/supabase";
 
 const LatestProducts = () => {
-    const { addToCart } = useCart();
+    const { addToCart, orderOnWhatsApp } = useCart();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -83,10 +83,13 @@ const LatestProducts = () => {
 
                                     {/* Hover Overlay Actions */}
                                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-                                        <button onClick={() => addToCart(product)} className="bg-white text-gray-900 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:bg-red-600 hover:text-white">
+                                        <button onClick={() => addToCart(product)} className="bg-white text-gray-900 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 hover:bg-red-600 hover:text-white" title="Add to Cart">
                                             <ShoppingBag size={20} />
                                         </button>
-                                        <button className="bg-white text-gray-900 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75 hover:bg-red-600 hover:text-white">
+                                        <button onClick={() => orderOnWhatsApp(product)} className="bg-white text-[#25D366] p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75 hover:bg-[#25D366] hover:text-white" title="Order on WhatsApp">
+                                            <MessageSquare size={20} />
+                                        </button>
+                                        <button className="bg-white text-gray-900 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-150 hover:bg-red-600 hover:text-white" title="Quick View">
                                             <Eye size={20} />
                                         </button>
                                     </div>
