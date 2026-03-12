@@ -54,7 +54,7 @@ const ContactPage = () => {
         "The Archive. A collection of timeless silhouettes."
     ];
 
-    const whatsappNumber = "+25442424046";
+    const whatsappNumber = "+254742424046";
     const openWhatsApp = () => {
         const message = encodeURIComponent("Hello RONA, I have an inquiry regarding your products.");
         window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
@@ -150,7 +150,7 @@ const ContactPage = () => {
                                         <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400">WhatsApp</h3>
                                     </div>
                                     <p className="text-xl font-black text-gray-900 group-hover:text-red-600 transition-colors flex items-center gap-2">
-                                        +254 424 24046
+                                        +254 742 424046
                                         <ArrowRight size={18} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                                     </p>
                                 </div>

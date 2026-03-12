@@ -73,7 +73,7 @@ export const CartProvider = ({ children }) => {
 
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-    const whatsappNumber = "+25442424046";
+    const whatsappNumber = "+254742424046";
 
     const orderOnWhatsApp = (product, size = "M", color = "Default") => {
         const message = encodeURIComponent(
