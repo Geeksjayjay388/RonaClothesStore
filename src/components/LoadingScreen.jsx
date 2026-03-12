@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import logoName from "../assets/logoName.png";
 
 const LoadingScreen = () => {
     const dotVariants = {
@@ -17,6 +18,15 @@ const LoadingScreen = () => {
 
     return (
         <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white">
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="mb-8"
+            >
+                <img src={logoName} alt="RONA ELEMENTRA" className="h-12 md:h-16 object-contain" />
+            </motion.div>
+
             <div className="flex gap-3 mb-8">
                 {[0, 1, 2].map((i) => (
                     <motion.div

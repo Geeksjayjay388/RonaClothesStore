@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import logoName from "../assets/logoName.png";
 
 const Navbar = () => {
     const location = useLocation();
@@ -48,9 +49,8 @@ const Navbar = () => {
                 </button>
 
                 {/* Logo - Centered on mobile, Left on Desktop */}
-                <Link to="/" className="text-xl sm:text-2xl font-black tracking-tighter text-gray-900 flex items-center gap-1">
-                    <span className="bg-gray-900 text-white px-2 py-0.5 rounded">RONA</span>
-                    <span className="hidden sm:inline">ELEMENTRA</span>
+                <Link to="/" className="flex items-center">
+                    <img src={logoName} alt="RONA ELEMENTRA" className="h-8 sm:h-10 object-contain" />
                 </Link>
 
                 {/* Desktop Navigation */}
@@ -135,8 +135,8 @@ const Navbar = () => {
                                     className="absolute top-0 left-0 bottom-0 w-[80%] max-w-xs bg-white shadow-2xl flex flex-col h-full"
                                 >
                                     <div className="p-6 border-b border-gray-100 flex items-center justify-between shrink-0">
-                                        <Link to="/" className="text-xl font-black tracking-tighter text-gray-900">
-                                            RONA<span className="text-red-600">.</span>
+                                        <Link to="/" className="flex items-center">
+                                            <img src={logoName} alt="RONA ELEMENTRA" className="h-8 object-contain" />
                                         </Link>
                                         <button
                                             onClick={() => setIsOpen(false)}
