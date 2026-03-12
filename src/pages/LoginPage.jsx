@@ -41,7 +41,7 @@ const LoginPage = () => {
             const { data, error } = await signIn(trimmedEmail, password);
             if (error) throw error;
 
-            toast.success("Welcome to Elementra.");
+            toast.success("Welcome to RONA.");
 
             // Redirection is handled by the useEffect above
         } catch (error) {

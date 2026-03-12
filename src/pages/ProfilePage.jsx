@@ -28,11 +28,10 @@ import { toast } from "react-hot-toast";
 import { supabase } from "../lib/supabase";
 
 const ProfilePage = () => {
-    const { user, signOut } = useAuth();
+    const { user, signOut, profile, refreshProfile } = useAuth();
     const navigate = useNavigate();
 
     // Core Profile State
-    const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
@@ -45,60 +44,19 @@ const ProfilePage = () => {
     });
 
     useEffect(() => {
-        if (!user) {
+        if (!user && !loading) {
             navigate("/login");
             return;
         }
 
-        const fetchProfile = async () => {
-            try {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
-
-                if (data) {
-                    setProfile(data);
-                    setFormData({
-                        first_name: data.first_name || "",
-                        last_name: data.last_name || "",
-                    });
-                }
-            } catch (err) {
-                console.error("Error fetching profile:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProfile();
-
-        // Realtime subscription for the current user's profile
-        const channel = supabase
-            .channel(`public:profiles:id=eq.${user.id}`)
-            .on('postgres_changes',
-                {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'profiles',
-                    filter: `id=eq.${user.id}`
-                },
-                (payload) => {
-                    console.log("Profile update received via Realtime:", payload.new);
-                    setProfile(payload.new);
-                    setFormData({
-                        first_name: payload.new.first_name || "",
-                        last_name: payload.new.last_name || "",
-                    });
-                }
-            )
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel);
-        };
-    }, [user, navigate]);
+        if (profile) {
+            setFormData({
+                first_name: profile.first_name || "",
+                last_name: profile.last_name || "",
+            });
+            setLoading(false);
+        }
+    }, [user, profile, loading, navigate]);
 
     const handleSignOut = async () => {
         try {
@@ -131,8 +89,8 @@ const ProfilePage = () => {
 
         try {
             const fileExt = file.name.split('.').pop();
-            const fileName = `${user.id}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-            const filePath = `avatars/${fileName}`;
+            const fileName = `${Math.random().toString(36).substring(7)}.${fileExt}`;
+            const filePath = `${user.id}/${fileName}`;
 
             // 1. Upload to Supabase Storage
             const { error: uploadError } = await supabase.storage
@@ -154,7 +112,7 @@ const ProfilePage = () => {
 
             if (updateError) throw updateError;
 
-            setProfile(prev => ({ ...prev, avatar_url: publicUrl }));
+            await refreshProfile();
             toast.success("Profile image updated!", { id: toastId });
         } catch (error) {
             console.error("Avatar upload error:", error);
@@ -211,8 +169,6 @@ const ProfilePage = () => {
         ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
         : "March 2024";
 
-    const memberTier = (profile?.role || user?.user_metadata?.role) === 'admin' ? "Store Admin" : "Gold Member";
-
     const menuItems = [
         { id: "personal", icon: UserIcon, label: "Personal Info", color: "blue" },
         { id: "orders", icon: Package, label: "Order History", color: "pink", badge: "0" },
@@ -222,7 +178,7 @@ const ProfilePage = () => {
 
     const stats = [
         { label: "Orders", value: "0", trend: "0%", icon: Package },
-        { label: "Spent", value: "$0", trend: "0%", icon: TrendingUp },
+        { label: "Spent", value: formatPrice(0), trend: "0%", icon: TrendingUp },
         { label: "Points", value: "0", trend: "New", icon: Award },
         { label: "Activity", value: "100%", trend: "Active", icon: Activity },
     ];
@@ -260,7 +216,14 @@ const ProfilePage = () => {
                                     />
                                     <div className="w-28 h-28 rounded-2xl bg-red-600 flex items-center justify-center overflow-hidden shadow-lg shadow-red-100 relative">
                                         {profile?.avatar_url ? (
-                                            <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                            <img
+                                                src={`${profile.avatar_url}?t=${new Date().getTime()}`}
+                                                alt="Profile"
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    console.error("ProfilePage: Image failed to load:", profile.avatar_url);
+                                                }}
+                                            />
                                         ) : (
                                             <span className="text-3xl font-bold text-white uppercase">
                                                 {displayFirstName[0]}{displayLastName ? displayLastName[0] : ""}
@@ -279,13 +242,9 @@ const ProfilePage = () => {
                                 {/* Info */}
                                 <div className="flex-grow text-center md:text-left">
                                     <div className="flex flex-col md:flex-row md:items-baseline gap-3 mb-4">
-                                        <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
+                                        <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight">
                                             {displayFirstName} {displayLastName}
                                         </h1>
-                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-50 text-red-700 text-xs font-bold uppercase tracking-wider">
-                                            <Award size={12} />
-                                            {memberTier}
-                                        </span>
                                     </div>
 
                                     <div className="flex flex-wrap justify-center md:justify-start gap-5 text-gray-500 font-medium">
@@ -295,11 +254,7 @@ const ProfilePage = () => {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Calendar size={16} className="text-gray-400" />
-                                            <span className="text-sm">Since {joinDate}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Shield size={16} className="text-emerald-500" />
-                                            <span className="text-sm text-emerald-600 font-bold uppercase tracking-widest text-[10px]">Archive Member</span>
+                                            <span className="text-sm">Member since {joinDate}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -318,11 +273,11 @@ const ProfilePage = () => {
                                             }`}
                                     >
                                         {saving ? <Loader2 size={18} className="animate-spin" /> : isEditing ? <div className="w-2 h-2 rounded-full bg-white animate-pulse" /> : <Edit3 size={18} />}
-                                        <span>{saving ? "Saving..." : isEditing ? "Save Archive" : "Edit Profile"}</span>
+                                        <span>{saving ? "Saving..." : isEditing ? "Save Changes" : "Edit Profile"}</span>
                                     </button>
                                     <button
                                         onClick={handleSignOut}
-                                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-red-50 border border-gray-200 text-red-600 rounded-xl transition-all font-bold text-sm group"
+                                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-gray-50 border border-gray-200 text-gray-500 hover:text-gray-900 rounded-xl transition-all font-bold text-sm group"
                                     >
                                         <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
                                         <span>Sign Out</span>
@@ -339,7 +294,6 @@ const ProfilePage = () => {
                                         </div>
                                         <div className="flex items-center justify-center md:justify-start gap-2">
                                             <span className="text-xl font-black text-gray-900">{stat.value}</span>
-                                            <span className="text-xs text-red-500 font-bold tracking-tight">{stat.trend}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -386,13 +340,13 @@ const ProfilePage = () => {
                             </div>
 
                             {/* Mini Promo Card */}
-                            <div className="bg-red-600 rounded-2xl p-6 shadow-lg shadow-red-100 relative overflow-hidden group">
-                                <h3 className="font-black text-white text-lg mb-1 relative z-10">Premium Perks</h3>
-                                <p className="text-red-100 text-xs mb-4 relative z-10 font-medium tracking-wide leading-relaxed">Early access to limited drops and exclusive archive insights.</p>
-                                <button className="w-full py-2.5 bg-white text-red-600 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors relative z-10 shadow-sm">
+                            <div className="bg-gray-900 rounded-2xl p-6 shadow-lg shadow-gray-100 relative overflow-hidden group">
+                                <h3 className="font-black text-white text-lg mb-1 relative z-10">Archive Perks</h3>
+                                <p className="text-gray-400 text-xs mb-4 relative z-10 font-medium tracking-wide leading-relaxed">Early access to limited drops and exclusive insights.</p>
+                                <button className="w-full py-2.5 bg-white text-gray-900 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors relative z-10 shadow-sm">
                                     Learn More
                                 </button>
-                                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl animate-pulse" />
+                                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/5 rounded-full blur-xl animate-pulse" />
                             </div>
                         </aside>
 
@@ -405,7 +359,7 @@ const ProfilePage = () => {
                                         <h2 className="text-lg font-black text-gray-900 uppercase tracking-widest">
                                             {menuItems.find(i => i.id === activeTab)?.label}
                                         </h2>
-                                        <p className="text-gray-500 text-[10px] font-bold mt-1 uppercase tracking-[0.15em]">Rona Archive Management</p>
+                                        <p className="text-gray-500 text-[10px] font-bold mt-1 uppercase tracking-[0.15em]">Personal Information & Security</p>
                                     </div>
                                     {isEditing && (
                                         <div className="flex gap-2">
@@ -425,7 +379,7 @@ const ProfilePage = () => {
                                                 onClick={handleSaveProfile}
                                                 className="px-5 py-2 rounded-xl bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-md active:scale-95"
                                             >
-                                                Save Archive
+                                                Save Changes
                                             </button>
                                         </div>
                                     )}
@@ -495,8 +449,8 @@ const ProfilePage = () => {
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     <div className="flex items-center justify-between p-5 rounded-2xl bg-gray-50 border border-gray-200/50 hover:border-gray-300 transition-all group cursor-pointer">
                                                         <div className="flex items-center gap-4">
-                                                            <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center">
-                                                                <Shield className="text-red-600" size={18} />
+                                                            <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                                                                <Shield className="text-gray-900" size={18} />
                                                             </div>
                                                             <div>
                                                                 <h4 className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Account Status</h4>
@@ -537,7 +491,7 @@ const ProfilePage = () => {
                                     <div className="flex items-center gap-2">
                                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                         <p className="text-[10px] font-black uppercase tracking-widest">
-                                            Archive Synced
+                                            Live Synced
                                         </p>
                                     </div>
                                     <p className="text-[10px] font-bold tracking-widest uppercase">
@@ -549,10 +503,10 @@ const ProfilePage = () => {
 
                     </div>
                 </div>
-            </main>
+            </main >
 
             <Footer />
-        </div>
+        </div >
     );
 };
 

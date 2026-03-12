@@ -18,21 +18,27 @@ export const AuthProvider = ({ children }) => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [profile, setProfile] = useState(null);
 
+    const fetchProfile = async (userId) => {
+        if (!userId) {
+            setProfile(null);
+            return;
+        }
+        console.log("Fetching profile for user:", userId);
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
+
+        if (error) {
+            console.error("Error fetching profile:", error.message);
+        } else {
+            console.log("Profile fetched successfully:", data);
+            setProfile(data);
+        }
+    };
+
     useEffect(() => {
-        const fetchProfile = async (userId) => {
-            if (!userId) {
-                setProfile(null);
-                return;
-            }
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', userId)
-                .single();
-            if (!error) {
-                setProfile(data);
-            }
-        };
 
         // Check for active session on load
         const getInitialSession = async () => {
@@ -50,19 +56,60 @@ export const AuthProvider = ({ children }) => {
 
         getInitialSession();
 
-        // Listen for changes on auth state (logged in, signed out, etc.)
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            setSession(session);
+        // Listen for changes on auth state
+        const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
             const currentUser = session?.user ?? null;
+            setSession(session);
             setUser(currentUser);
             setIsAdmin(currentUser?.email === 'officialsihul@gmail.com' || currentUser?.user_metadata?.role === 'admin');
-            if (currentUser) fetchProfile(currentUser.id);
-            else setProfile(null);
+
+            if (currentUser) {
+                fetchProfile(currentUser.id);
+            } else {
+                setProfile(null);
+            }
             setLoading(false);
         });
 
+        // Realtime Profile Sync
+        let profileSubscription = null;
+
+        const setupProfileSubscription = (userId) => {
+            if (profileSubscription) profileSubscription.unsubscribe();
+
+            profileSubscription = supabase
+                .channel(`public:profiles:id=eq.${userId}`)
+                .on('postgres_changes',
+                    { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${userId}` },
+                    (payload) => {
+                        console.log("Realtime profile update received:", payload.new);
+                        setProfile(payload.new);
+                    }
+                )
+                .subscribe((status) => {
+                    console.log(`Profile subscription status for ${userId}:`, status);
+                });
+        };
+
+        // Initialize subscription if user is already logged in
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user) setupProfileSubscription(session.user.id);
+        });
+
+        // Update subscription on auth changes
+        const { data: { subscription: authSubForProfile } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (session?.user) {
+                setupProfileSubscription(session.user.id);
+            } else {
+                if (profileSubscription) profileSubscription.unsubscribe();
+                profileSubscription = null;
+            }
+        });
+
         return () => {
-            subscription.unsubscribe();
+            authSubscription.unsubscribe();
+            authSubForProfile.unsubscribe();
+            if (profileSubscription) profileSubscription.unsubscribe();
         };
     }, []);
 
@@ -94,6 +141,7 @@ export const AuthProvider = ({ children }) => {
         signOut,
         isAdmin,
         profile,
+        refreshProfile: () => user && fetchProfile(user.id),
     };
 
     return (

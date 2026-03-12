@@ -1,5 +1,7 @@
+import React from "react";
 import { Link } from "react-router-dom";
-import { Instagram, Twitter, Facebook, ArrowRight, Send } from "lucide-react";
+import { Instagram, Linkedin, Music2, ArrowRight, Send } from "lucide-react";
+import logoName from "../assets/logoName.png";
 
 const Footer = () => {
     return (
@@ -34,22 +36,36 @@ const Footer = () => {
 
                     {/* Brand Column */}
                     <div className="space-y-6">
-                        <Link to="/" className="text-2xl font-black tracking-tighter flex items-center gap-1">
-                            <span className="bg-white text-black px-2 py-0.5 rounded">RONA</span>
-                            <span>ELEMENTRA</span>
+                        <Link to="/" className="inline-block bg-white p-2 rounded-xl">
+                            <img src={logoName} alt="RONA" className="h-10 object-contain" />
                         </Link>
                         <p className="text-gray-400 leading-relaxed max-w-sm">
                             Redefining everyday essentials with a focus on sustainable quality and timeless silhouettes.
                         </p>
                         <div className="flex gap-4">
-                            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-600 transition-all duration-300">
+                            <a
+                                href="https://www.instagram.com/ronaelementra?igsh=MWJ0dnQ0bjFtbmd4Zw=="
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-600 transition-all duration-300"
+                            >
                                 <Instagram size={18} />
                             </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-600 transition-all duration-300">
-                                <Twitter size={18} />
+                            <a
+                                href="https://www.tiktok.com/@ronagesora?_r=1&_t=ZS-94bbUykEdld"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-600 transition-all duration-300"
+                            >
+                                <Music2 size={18} />
                             </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-600 transition-all duration-300">
-                                <Facebook size={18} />
+                            <a
+                                href="https://www.linkedin.com/in/rona-gesora-0614b4329?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-600 transition-all duration-300"
+                            >
+                                <Linkedin size={18} />
                             </a>
                         </div>
                     </div>
@@ -72,7 +88,7 @@ const Footer = () => {
                             <li><a href="#" className="hover:text-white transition-colors">Shipping Policy</a></li>
                             <li><a href="#" className="hover:text-white transition-colors">Returns & Exchanges</a></li>
                             <li><a href="#" className="hover:text-white transition-colors">FAQs</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+                            <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
                         </ul>
                     </div>
                 </div>

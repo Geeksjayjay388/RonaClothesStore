@@ -50,7 +50,9 @@ const Navbar = () => {
 
                 {/* Logo - Centered on mobile, Left on Desktop */}
                 <Link to="/" className="flex items-center">
-                    <img src={logoName} alt="RONA ELEMENTRA" className="h-8 sm:h-10 object-contain" />
+                    <div className="bg-white p-1 rounded-lg">
+                        <img src={logoName} alt="RONA" className="h-8 sm:h-10 object-contain" />
+                    </div>
                 </Link>
 
                 {/* Desktop Navigation */}
@@ -58,6 +60,7 @@ const Navbar = () => {
                     <Link to="/" className={navLinkClass("/")}>Home</Link>
                     <Link to="/store" className={navLinkClass("/store")}>Store</Link>
                     <Link to="/about" className={navLinkClass("/about")}>Our Story</Link>
+                    <Link to="/contact" className={navLinkClass("/contact")}>Contact</Link>
 
                     {isAdmin && (
                         <Link
@@ -84,7 +87,12 @@ const Navbar = () => {
                                 </span>
                                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 group-hover:border-pink-200 group-hover:bg-pink-50 transition-all overflow-hidden">
                                     {profile?.avatar_url ? (
-                                        <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                        <img
+                                            src={`${profile.avatar_url}?t=${new Date().getTime()}`}
+                                            alt="Profile"
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => console.error("Navbar: Profile image failed:", profile.avatar_url)}
+                                        />
                                     ) : (
                                         <User size={18} />
                                     )}
@@ -139,7 +147,9 @@ const Navbar = () => {
                                 >
                                     <div className="p-6 border-b border-gray-100 flex items-center justify-between shrink-0">
                                         <Link to="/" className="flex items-center">
-                                            <img src={logoName} alt="RONA ELEMENTRA" className="h-8 object-contain" />
+                                            <div className="bg-white p-1 rounded-lg">
+                                                <img src={logoName} alt="RONA" className="h-8 object-contain" />
+                                            </div>
                                         </Link>
                                         <button
                                             onClick={() => setIsOpen(false)}
@@ -154,6 +164,7 @@ const Navbar = () => {
                                             <Link to="/" className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">Home</Link>
                                             <Link to="/store" className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">Store</Link>
                                             <Link to="/about" className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">Our Story</Link>
+                                            <Link to="/contact" className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">Contact</Link>
                                             {isAdmin && (
                                                 <Link to="/admin" className="text-2xl font-black text-red-600 lowercase tracking-tighter">Admin Dashboard</Link>
                                             )}

@@ -77,7 +77,7 @@ export const CartProvider = ({ children }) => {
 
     const orderOnWhatsApp = (product, size = "M", color = "Default") => {
         const message = encodeURIComponent(
-            `Hello Rona Elementra, I'd like to order:\n\n` +
+            `Hello RONA, I'd like to order:\n\n` +
             `*Product:* ${product.name}\n` +
             `*Price:* ${formatPrice(product.price)}\n` +
             `*Size:* ${size}\n` +
@@ -89,7 +89,7 @@ export const CartProvider = ({ children }) => {
 
     const checkoutToWhatsApp = () => {
         const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-        const shipping = 5.00;
+        const shipping = 250;
         const total = subtotal + shipping;
 
         let itemsList = cartItems.map(item =>
@@ -97,7 +97,7 @@ export const CartProvider = ({ children }) => {
         ).join('\n');
 
         const message = encodeURIComponent(
-            `Hello Rona Elementra, I'd like to place an order:\n\n` +
+            `Hello RONA, I'd like to place an order:\n\n` +
             `${itemsList}\n\n` +
             `*Subtotal:* ${formatPrice(subtotal)}\n` +
             `*Shipping:* ${formatPrice(shipping)}\n` +

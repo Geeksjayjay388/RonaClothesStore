@@ -6,6 +6,7 @@ import ProfilePage from "./pages/ProfilePage";
 import CartPage from "./pages/CartPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
+import ContactPage from "./pages/ContactPage";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -17,6 +18,7 @@ import LoadingScreen from "./components/LoadingScreen";
 import { useAuth } from "./context/AuthContext";
 import { useState, useEffect } from "react";
 import HeroImage from "./assets/hero.png";
+import LoginBg from "./assets/login-bg.png";
 
 const AppContent = () => {
   const { loading: authLoading } = useAuth();
@@ -24,7 +26,7 @@ const AppContent = () => {
 
   useEffect(() => {
     // Prefetch key images
-    const imagesToLoad = [HeroImage];
+    const imagesToLoad = [HeroImage, LoginBg];
     let loadedCount = 0;
 
     if (imagesToLoad.length === 0) {
@@ -66,6 +68,7 @@ const AppContent = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/store" element={<StorePage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route
             path="/profile"
             element={

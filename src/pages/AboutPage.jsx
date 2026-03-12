@@ -22,7 +22,7 @@ const AboutPage = () => {
                         <span className="text-[10px] tracking-[0.5em] uppercase text-gray-500 mb-6 block animate-fade-in">Est. 2026</span>
                         <img
                             src={logoName}
-                            alt="Rona Elementra"
+                            alt="RONA"
                             className="h-16 md:h-24 mx-auto object-contain brightness-0"
                         />
                     </div>
@@ -42,7 +42,7 @@ const AboutPage = () => {
                                         of the self.
                                     </h2>
                                     <p className="text-xl text-gray-600 leading-relaxed max-w-xl">
-                                        RONA ELEMENTRA was born from a refusal to accept the temporary. We create silhouettes that ignore trends in favor of permanence.
+                                        RONA was born from a refusal to accept the temporary. We create silhouettes that ignore trends in favor of permanence.
                                     </p>
                                 </div>
 
@@ -67,7 +67,7 @@ const AboutPage = () => {
                                     <div className="aspect-[3/4] overflow-hidden bg-gray-100 shadow-sm">
                                         <img
                                             src={ownerImage}
-                                            alt="Founder of Rona Elementra"
+                                            alt="Founder of RONA"
                                             className="w-full h-full object-cover scale-[1.01] hover:scale-110 transition-transform duration-[2s] ease-out"
                                         />
                                     </div>

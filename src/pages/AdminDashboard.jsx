@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, ExternalLink, Search, UserPlus, DollarSign, Package, Layers, LayoutDashboard, PlusCircle, MoreVertical, Save, Image as ImageIcon, Eye, EyeOff, X, ArrowLeft, Loader2, ChevronRight, TrendingUp, ShoppingBag } from "lucide-react";
+import { Plus, Edit2, Trash2, ExternalLink, Search, UserPlus, CreditCard, Package, Layers, LayoutDashboard, PlusCircle, MoreVertical, Save, Image as ImageIcon, Eye, EyeOff, X, ArrowLeft, Loader2, ChevronRight, TrendingUp, ShoppingBag } from "lucide-react";
 import { formatPrice } from "../lib/formatters";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
@@ -179,7 +179,7 @@ const AdminDashboard = () => {
 
     const stats = [
         { label: "Inventory", value: products.length, icon: Package, trend: `+${products.length}`, color: "red" },
-        { label: "Retail Value", value: formatPrice(products.reduce((acc, p) => acc + parseFloat(p.price), 0)), icon: DollarSign, trend: "Live", color: "red" },
+        { label: "Retail Value", value: formatPrice(products.reduce((acc, p) => acc + parseFloat(p.price), 0)), icon: CreditCard, trend: "Live", color: "red" },
     ];
 
     return (
@@ -197,7 +197,12 @@ const AdminDashboard = () => {
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-2xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-100 overflow-hidden shrink-0">
                                         {profile?.avatar_url ? (
-                                            <img src={profile.avatar_url} alt="Admin" className="w-full h-full object-cover" />
+                                            <img
+                                                src={`${profile.avatar_url}?t=${new Date().getTime()}`}
+                                                alt="Admin"
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => console.error("Admin Dashboard: Profile image failed:", profile.avatar_url)}
+                                            />
                                         ) : (
                                             <span className="text-white font-black text-xl">{profile?.first_name?.[0] || "A"}</span>
                                         )}
@@ -484,7 +489,7 @@ const AdminDashboard = () => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Price (KES)</label>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Price (KSh)</label>
                                         <input
                                             required
                                             type="number"

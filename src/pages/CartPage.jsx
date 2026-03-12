@@ -9,7 +9,7 @@ import { useCart } from "../context/CartContext";
 const CartPage = () => {
     const { cartItems, updateQuantity, removeItem, checkoutToWhatsApp } = useCart();
     const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    const shipping = 5.00;
+    const shipping = 250;
     const total = subtotal + (cartItems.length > 0 ? shipping : 0);
 
 
@@ -98,7 +98,6 @@ const CartPage = () => {
                                         <span className="text-lg font-bold text-gray-900">Total</span>
                                         <span className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter">{formatPrice(total)}</span>
                                     </div>
-                                    <p className="text-right text-xs text-gray-400 mt-2 font-bold tracking-widest uppercase">Taxes included</p>
                                 </div>
                             </div>
 

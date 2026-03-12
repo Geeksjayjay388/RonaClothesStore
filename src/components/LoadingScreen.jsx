@@ -22,9 +22,9 @@ const LoadingScreen = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="mb-8"
+                className="mb-8 bg-white p-2 rounded-xl"
             >
-                <img src={logoName} alt="RONA ELEMENTRA" className="h-12 md:h-16 object-contain" />
+                <img src={logoName} alt="RONA" className="h-12 md:h-16 object-contain" />
             </motion.div>
 
             <div className="flex gap-3 mb-8">
