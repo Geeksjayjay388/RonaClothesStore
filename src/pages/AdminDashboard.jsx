@@ -484,7 +484,7 @@ const AdminDashboard = () => {
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl relative z-10 overflow-hidden"
+                            className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl relative z-10 flex flex-col max-h-[90vh] overflow-hidden"
                         >
                             <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
                                 <h3 className="text-xl font-black tracking-tight">
@@ -495,7 +495,7 @@ const AdminDashboard = () => {
                                 </button>
                             </div>
 
-                            <form onSubmit={handleSave} className="p-8">
+                            <form onSubmit={handleSave} className="p-8 overflow-y-auto flex-grow custom-scrollbar">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="md:col-span-2">
                                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
