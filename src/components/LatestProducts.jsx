@@ -81,7 +81,7 @@ const LatestProducts = () => {
                                     <img
                                         src={product.image_url || product.image}
                                         alt={product.name}
-                                        className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${product.is_out_of_stock ? "grayscale opacity-50" : ""}`}
+                                        className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105`}
                                     />
 
                                     <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300"></div>
@@ -135,8 +135,8 @@ const LatestProducts = () => {
                                         onClick={() => !product.is_out_of_stock && addToCart(product)}
                                         disabled={product.is_out_of_stock}
                                         className={`w-full py-3 rounded-xl font-bold transition-colors border text-sm tracking-wide ${product.is_out_of_stock
-                                                ? "bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed"
-                                                : "bg-gray-50 text-gray-900 hover:bg-gray-900 hover:text-white border-gray-200 hover:border-gray-900"
+                                            ? "bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed"
+                                            : "bg-gray-50 text-gray-900 hover:bg-gray-900 hover:text-white border-gray-200 hover:border-gray-900"
                                             }`}
                                     >
                                         {product.is_out_of_stock ? "Out of Stock" : "Add to Cart"}

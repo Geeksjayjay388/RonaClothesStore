@@ -41,7 +41,7 @@ const ProductPreviewModal = ({ product, isOpen, onClose }) => {
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="bg-white w-full max-w-5xl rounded-3xl shadow-2xl relative z-10 overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+                        className="bg-white w-full max-w-5xl rounded-3xl shadow-2xl relative z-10 overflow-y-auto md:overflow-hidden flex flex-col md:flex-row max-h-[90vh] custom-scrollbar"
                     >
                         {/* Close button - Desktop */}
                         <button
@@ -72,7 +72,7 @@ const ProductPreviewModal = ({ product, isOpen, onClose }) => {
                                         transition={{ duration: 0.2 }}
                                         src={allImages[currentImageIndex]}
                                         alt={`${product.name} - view ${currentImageIndex + 1}`}
-                                        className={`w-full h-full object-contain drop-shadow-xl max-h-[500px] ${product.is_out_of_stock ? "grayscale opacity-50" : ""}`}
+                                        className={`w-full h-full object-contain drop-shadow-xl max-h-[500px]`}
                                     />
                                 </AnimatePresence>
 
@@ -126,7 +126,7 @@ const ProductPreviewModal = ({ product, isOpen, onClose }) => {
                         </div>
 
                         {/* Details Section */}
-                        <div className="md:w-1/2 p-6 md:p-10 flex flex-col max-h-[50vh] md:max-h-none overflow-y-auto custom-scrollbar">
+                        <div className="md:w-1/2 p-6 md:p-10 flex flex-col md:max-h-none md:overflow-y-auto custom-scrollbar">
                             <div className="mb-2">
                                 <span className="inline-block px-3 py-1 bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest rounded-full">
                                     {product.category}
@@ -157,8 +157,8 @@ const ProductPreviewModal = ({ product, isOpen, onClose }) => {
                                     onClick={() => !product.is_out_of_stock && addToCart(product)}
                                     disabled={product.is_out_of_stock}
                                     className={`w-full py-4 rounded-full font-black uppercase tracking-widest text-sm transition-all shadow-lg flex items-center justify-center gap-2 ${product.is_out_of_stock
-                                            ? "bg-gray-100 text-gray-400 cursor-not-allowed shadow-none"
-                                            : "bg-red-600 text-white hover:bg-red-700 shadow-red-600/20"
+                                        ? "bg-gray-100 text-gray-400 cursor-not-allowed shadow-none"
+                                        : "bg-red-600 text-white hover:bg-red-700 shadow-red-600/20"
                                         }`}
                                 >
                                     {product.is_out_of_stock ? "Sold Out" : <><ShoppingCart size={18} /> Add to Cart</>}
