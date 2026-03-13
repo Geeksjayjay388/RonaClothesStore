@@ -72,9 +72,23 @@ const ProductPreviewModal = ({ product, isOpen, onClose }) => {
                                         transition={{ duration: 0.2 }}
                                         src={allImages[currentImageIndex]}
                                         alt={`${product.name} - view ${currentImageIndex + 1}`}
-                                        className="w-full h-full object-contain drop-shadow-xl max-h-[500px]"
+                                        className={`w-full h-full object-contain drop-shadow-xl max-h-[500px] ${product.is_out_of_stock ? "grayscale opacity-50" : ""}`}
                                     />
                                 </AnimatePresence>
+
+                                {/* Modal Status Badges */}
+                                <div className="absolute top-8 left-8 flex flex-col gap-2 z-20">
+                                    {product.is_out_of_stock && (
+                                        <span className="bg-gray-900/90 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl">
+                                            Sold Out
+                                        </span>
+                                    )}
+                                    {product.on_offer && (
+                                        <span className="bg-red-600/90 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl">
+                                            Special Offer
+                                        </span>
+                                    )}
+                                </div>
 
                                 {/* Navigation Arrows */}
                                 {allImages.length > 1 && (
@@ -123,8 +137,11 @@ const ProductPreviewModal = ({ product, isOpen, onClose }) => {
                                 {product.name}
                             </h2>
 
-                            <div className="text-2xl font-bold text-gray-900 mb-6 pb-6 border-b border-gray-100">
-                                {formatPrice(product.price)}
+                            <div className="flex items-baseline gap-3 mb-6 pb-6 border-b border-gray-100">
+                                <span className="text-2xl font-bold text-gray-900">{formatPrice(product.price)}</span>
+                                {product.on_offer && product.original_price && (
+                                    <span className="text-sm text-gray-400 line-through font-bold">{formatPrice(product.original_price)}</span>
+                                )}
                             </div>
 
                             <div className="flex-grow mb-8">
@@ -137,16 +154,17 @@ const ProductPreviewModal = ({ product, isOpen, onClose }) => {
                             {/* Action Buttons */}
                             <div className="flex flex-col gap-3 mt-auto">
                                 <button
-                                    onClick={() => {
-                                        addToCart(product);
-                                    }}
-                                    className="w-full bg-red-600 text-white py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20 flex items-center justify-center gap-2"
+                                    onClick={() => !product.is_out_of_stock && addToCart(product)}
+                                    disabled={product.is_out_of_stock}
+                                    className={`w-full py-4 rounded-full font-black uppercase tracking-widest text-sm transition-all shadow-lg flex items-center justify-center gap-2 ${product.is_out_of_stock
+                                            ? "bg-gray-100 text-gray-400 cursor-not-allowed shadow-none"
+                                            : "bg-red-600 text-white hover:bg-red-700 shadow-red-600/20"
+                                        }`}
                                 >
-                                    <ShoppingCart size={18} />
-                                    Add to Cart
+                                    {product.is_out_of_stock ? "Sold Out" : <><ShoppingCart size={18} /> Add to Cart</>}
                                 </button>
 
-                                {orderOnWhatsApp && (
+                                {orderOnWhatsApp && !product.is_out_of_stock && (
                                     <button
                                         onClick={() => orderOnWhatsApp(product)}
                                         className="w-full bg-emerald-500 text-white py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"

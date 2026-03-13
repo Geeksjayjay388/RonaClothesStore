@@ -25,6 +25,9 @@ const AdminDashboard = () => {
         image_url: "",
         images: [], // Existing image URLs
         imageFiles: [], // New local files to upload
+        is_out_of_stock: false,
+        on_offer: false,
+        original_price: "",
     });
 
     useEffect(() => {
@@ -114,6 +117,9 @@ const AdminDashboard = () => {
                 category: formData.category,
                 image_url: primaryImageUrl || (uploadedUrls.length > 0 ? uploadedUrls[0] : ""),
                 images: uploadedUrls,
+                is_out_of_stock: formData.is_out_of_stock,
+                on_offer: formData.on_offer,
+                original_price: formData.on_offer ? parseFloat(formData.original_price) : null,
             };
 
             let error;
@@ -168,6 +174,9 @@ const AdminDashboard = () => {
             image_url: item.image_url || "",
             images: item.images || [],
             imageFiles: [],
+            is_out_of_stock: item.is_out_of_stock || false,
+            on_offer: item.on_offer || false,
+            original_price: item.original_price || "",
         });
         setIsModalOpen(true);
     };
@@ -409,9 +418,23 @@ const AdminDashboard = () => {
                                                                     </span>
                                                                 </td>
                                                                 <td className="px-8 py-4">
-                                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
-                                                                        Active
-                                                                    </span>
+                                                                    <div className="flex flex-col gap-1">
+                                                                        {product.is_out_of_stock && (
+                                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest">
+                                                                                Out of Stock
+                                                                            </span>
+                                                                        )}
+                                                                        {product.on_offer && (
+                                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
+                                                                                Offer
+                                                                            </span>
+                                                                        )}
+                                                                        {!product.is_out_of_stock && !product.on_offer && (
+                                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
+                                                                                Active
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
                                                                 </td>
                                                                 <td className="px-8 py-4 text-right">
                                                                     <div className="flex items-center justify-end gap-2">
@@ -583,6 +606,48 @@ const AdminDashboard = () => {
                                             placeholder="Tell us about this item..."
                                         />
                                     </div>
+
+                                    <div className="md:col-span-2 grid grid-cols-2 gap-4">
+                                        <div className="flex items-center gap-3 p-4 bg-gray-50 border border-gray-100 rounded-2xl hover:bg-white hover:border-red-100 transition-all cursor-pointer group" onClick={() => setFormData({ ...formData, is_out_of_stock: !formData.is_out_of_stock })}>
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${formData.is_out_of_stock ? "bg-red-600 text-white" : "bg-gray-100 text-gray-400 group-hover:bg-red-50 group-hover:text-red-400"}`}>
+                                                {formData.is_out_of_stock ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Inventory Status</span>
+                                                <span className={`text-xs font-bold ${formData.is_out_of_stock ? "text-red-600" : "text-gray-900"}`}>{formData.is_out_of_stock ? "Out of Stock" : "In Stock"}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-3 p-4 bg-gray-50 border border-gray-100 rounded-2xl hover:bg-white hover:border-emerald-100 transition-all cursor-pointer group" onClick={() => setFormData({ ...formData, on_offer: !formData.on_offer })}>
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${formData.on_offer ? "bg-emerald-500 text-white" : "bg-gray-100 text-gray-400 group-hover:bg-emerald-50 group-hover:text-emerald-400"}`}>
+                                                <TrendingUp size={18} />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Offer Visibility</span>
+                                                <span className={`text-xs font-bold ${formData.on_offer ? "text-emerald-600" : "text-gray-900"}`}>{formData.on_offer ? "On Offer" : "Regular Price"}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {formData.on_offer && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            className="md:col-span-2"
+                                        >
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Original "Was" Price (KSh)</label>
+                                            <input
+                                                required={formData.on_offer}
+                                                type="number"
+                                                step="0.01"
+                                                value={formData.original_price}
+                                                onChange={(e) => setFormData({ ...formData, original_price: e.target.value })}
+                                                className="w-full bg-pink-50/50 border border-pink-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
+                                                placeholder="e.g. 5000"
+                                            />
+                                            <p className="text-[10px] text-gray-400 font-medium mt-1 uppercase tracking-widest">This price will be shown with a strikethrough.</p>
+                                        </motion.div>
+                                    )}
                                 </div>
 
                                 <div className="mt-8 flex gap-3">

@@ -280,8 +280,8 @@ const ProfilePage = () => {
                                         onClick={handleSignOut}
                                         className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-gray-50 border border-gray-200 text-gray-500 hover:text-gray-900 rounded-xl transition-all font-bold text-sm group"
                                     >
-                                        <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
-                                        <span>Sign Out</span>
+                                        <LogOut size={18} className="text-red-500 group-hover:translate-x-1 transition-transform" />
+                                        <span className="text-red-500">Sign Out</span>
                                     </button>
                                 </div>
                             </div>

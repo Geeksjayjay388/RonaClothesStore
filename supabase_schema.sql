@@ -7,8 +7,11 @@ CREATE TABLE IF NOT EXISTS public.products (
     category TEXT,
     image_url TEXT,
     images TEXT[] DEFAULT '{}',
+    is_out_of_stock BOOLEAN DEFAULT false,
+    on_offer BOOLEAN DEFAULT false,
+    original_price DECIMAL(10, 2),
     created_at TIMESTAMPTZ DEFAULT now()
-);
+ );
 
 -- Create Collections Table
 CREATE TABLE IF NOT EXISTS public.collections (

@@ -81,7 +81,7 @@ const LatestProducts = () => {
                                     <img
                                         src={product.image_url || product.image}
                                         alt={product.name}
-                                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                                        className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${product.is_out_of_stock ? "grayscale opacity-50" : ""}`}
                                     />
 
                                     <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300"></div>
@@ -99,24 +99,47 @@ const LatestProducts = () => {
                                         </button>
                                     </div>
 
-                                    {/* Badge */}
-                                    <span className="absolute top-4 left-4 bg-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm">
-                                        New
-                                    </span>
+                                    {/* Status Badges */}
+                                    <div className="absolute top-4 left-4 flex flex-col gap-2">
+                                        <span className="bg-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm">
+                                            New
+                                        </span>
+                                        {product.is_out_of_stock && (
+                                            <span className="bg-gray-900 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm">
+                                                Sold Out
+                                            </span>
+                                        )}
+                                        {product.on_offer && (
+                                            <span className="bg-red-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm">
+                                                Sale
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Product Info */}
                                 <div className="p-4 sm:p-6 flex flex-col flex-grow text-left">
                                     <div className="flex justify-between items-start mb-1 sm:mb-2">
                                         <p className="text-[10px] sm:text-xs text-red-500 font-bold uppercase tracking-widest">{product.category}</p>
-                                        <p className="font-bold text-xs sm:text-base text-gray-900">{formatPrice(product.price)}</p>
+                                        <div className="flex flex-col items-end">
+                                            {product.on_offer && product.original_price && (
+                                                <span className="text-[10px] text-gray-400 line-through font-bold">{formatPrice(product.original_price)}</span>
+                                            )}
+                                            <p className="font-bold text-xs sm:text-base text-gray-900">{formatPrice(product.price)}</p>
+                                        </div>
                                     </div>
                                     <h3 className="text-sm sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-red-600 transition-colors line-clamp-1">{product.name}</h3>
                                     <p className="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6 flex-grow line-clamp-2">{product.description || "Everyday comfort with premium materials."}</p>
 
-                                    <button onClick={() => addToCart(product)} className="w-full bg-gray-50 text-gray-900 py-3 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-colors border border-gray-200 hover:border-gray-900 text-sm tracking-wide"
+                                    <button
+                                        onClick={() => !product.is_out_of_stock && addToCart(product)}
+                                        disabled={product.is_out_of_stock}
+                                        className={`w-full py-3 rounded-xl font-bold transition-colors border text-sm tracking-wide ${product.is_out_of_stock
+                                                ? "bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed"
+                                                : "bg-gray-50 text-gray-900 hover:bg-gray-900 hover:text-white border-gray-200 hover:border-gray-900"
+                                            }`}
                                     >
-                                        Add to Cart
+                                        {product.is_out_of_stock ? "Out of Stock" : "Add to Cart"}
                                     </button>
                                 </div>
                             </div>

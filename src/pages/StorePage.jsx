@@ -109,9 +109,23 @@ const StorePage = () => {
                                         <img
                                             src={product.image_url || product.image}
                                             alt={product.name}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out ${product.is_out_of_stock ? "grayscale opacity-50" : ""}`}
                                         />
                                         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300"></div>
+
+                                        {/* Status Badges */}
+                                        <div className="absolute top-4 left-4 flex flex-col gap-2">
+                                            {product.is_out_of_stock && (
+                                                <span className="bg-gray-900/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl">
+                                                    Sold Out
+                                                </span>
+                                            )}
+                                            {product.on_offer && (
+                                                <span className="bg-red-600/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl">
+                                                    Sale
+                                                </span>
+                                            )}
+                                        </div>
 
                                         <div className="absolute top-2 right-2 sm:top-4 sm:right-4 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 flex flex-col gap-2">
                                             <button
@@ -133,16 +147,25 @@ const StorePage = () => {
                                     <div className="p-4 sm:p-6 flex flex-col flex-grow text-left">
                                         <div className="flex justify-between items-start mb-1 sm:mb-2">
                                             <p className="text-[10px] sm:text-xs text-red-500 font-bold uppercase tracking-widest">{product.category}</p>
-                                            <p className="font-bold text-xs sm:text-base text-gray-900">{formatPrice(product.price)}</p>
+                                            <div className="flex flex-col items-end">
+                                                {product.on_offer && product.original_price && (
+                                                    <span className="text-[10px] text-gray-400 line-through font-bold">{formatPrice(product.original_price)}</span>
+                                                )}
+                                                <p className="font-bold text-xs sm:text-base text-gray-900">{formatPrice(product.price)}</p>
+                                            </div>
                                         </div>
                                         <h3 className="text-sm sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-red-600 transition-colors line-clamp-1">{product.name}</h3>
                                         <p className="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6 flex-grow line-clamp-2">{product.description}</p>
 
                                         <button
-                                            onClick={() => addToCart(product)}
-                                            className="w-full bg-gray-50 text-gray-900 py-3 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-colors border border-gray-200 hover:border-gray-900 text-sm tracking-wide"
+                                            onClick={() => !product.is_out_of_stock && addToCart(product)}
+                                            disabled={product.is_out_of_stock}
+                                            className={`w-full py-3 rounded-xl font-bold transition-colors border text-sm tracking-wide ${product.is_out_of_stock
+                                                    ? "bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed"
+                                                    : "bg-gray-50 text-gray-1000 py-3 rounded-xl font-bold hover:bg-gray-900 hover:text-white border-gray-200 hover:border-gray-900"
+                                                }`}
                                         >
-                                            Add to Cart
+                                            {product.is_out_of_stock ? "Out of Stock" : "Add to Cart"}
                                         </button>
                                     </div>
                                 </div>
