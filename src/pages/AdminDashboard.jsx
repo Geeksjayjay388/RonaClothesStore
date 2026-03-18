@@ -378,7 +378,7 @@ const AdminDashboard = () => {
                                         exit={{ opacity: 0, x: -20 }}
                                         className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-sm"
                                     >
-                                        <div className="overflow-x-auto">
+                                        <div className="hidden lg:block overflow-x-auto">
                                             <table className="w-full text-left border-collapse">
                                                 <thead>
                                                     <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -459,6 +459,71 @@ const AdminDashboard = () => {
                                                     )}
                                                 </tbody>
                                             </table>
+                                        </div>
+
+                                        {/* Mobile Card View */}
+                                        <div className="lg:hidden divide-y divide-gray-50">
+                                            {products.length === 0 ? (
+                                                <div className="px-8 py-12 text-center text-gray-400 font-medium">
+                                                    No products found. Click 'Add Product' to create one.
+                                                </div>
+                                            ) : (
+                                                products.map((product) => (
+                                                    <div key={product.id} className="p-5 space-y-4">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-16 h-16 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100">
+                                                                <img
+                                                                    src={product.image_url || product.image}
+                                                                    alt={product.name}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                            <div className="flex-grow min-w-0">
+                                                                <h4 className="font-bold text-gray-900 truncate leading-tight">{product.name}</h4>
+                                                                <p className="text-xs text-gray-500 mt-0.5">{product.category}</p>
+                                                                <p className="font-black text-red-600 mt-1">{formatPrice(product.price)}</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex items-center justify-between pt-2 border-t border-gray-50">
+                                                            <div className="flex gap-2">
+                                                                {product.is_out_of_stock && (
+                                                                    <span className="px-2 py-0.5 rounded-full bg-red-50 text-red-600 text-[9px] font-black uppercase tracking-widest">
+                                                                        Out of Stock
+                                                                    </span>
+                                                                )}
+                                                                {product.on_offer && (
+                                                                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest">
+                                                                        Offer
+                                                                    </span>
+                                                                )}
+                                                                {!product.is_out_of_stock && !product.on_offer && (
+                                                                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest">
+                                                                        Active
+                                                                    </span>
+                                                                )}
+                                                            </div>
+
+                                                            <div className="flex items-center gap-3">
+                                                                <button
+                                                                    onClick={() => openEditModal(product, "product")}
+                                                                    className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-xl text-gray-600 font-bold text-xs transition-colors border border-gray-100"
+                                                                >
+                                                                    <Edit2 size={14} />
+                                                                    <span>Edit</span>
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDelete(product.id, "products")}
+                                                                    className="flex items-center gap-1.5 px-3 py-2 bg-red-50 hover:bg-red-600 rounded-xl text-red-600 hover:text-white font-bold text-xs transition-colors border border-red-100"
+                                                                >
+                                                                    <Trash2 size={14} />
+                                                                    <span>Delete</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
                                         </div>
                                     </motion.div>
                                 )}
