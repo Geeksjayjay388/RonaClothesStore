@@ -164,15 +164,15 @@ const ProductPreviewModal = ({ product, isOpen, onClose }) => {
                                 </p>
 
                                 {/* Size Selection */}
-                                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Select Size</h4>
+                                <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Select Size</h4>
                                 <div className="flex flex-wrap gap-2">
                                     {availableSizes.map((size) => (
                                         <button
                                             key={size}
                                             onClick={() => setSelectedSize(size)}
                                             className={`min-w-[48px] h-12 flex items-center justify-center rounded-xl border-2 font-black text-sm transition-all ${selectedSize === size
-                                                    ? "border-red-600 bg-red-50 text-red-600 shadow-md scale-105"
-                                                    : "border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:text-gray-900"
+                                                ? "border-red-600 bg-red-50 text-red-600 shadow-md scale-105"
+                                                : "border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:text-gray-900"
                                                 }`}
                                         >
                                             {size}

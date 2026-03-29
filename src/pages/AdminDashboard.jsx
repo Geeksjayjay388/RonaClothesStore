@@ -417,6 +417,11 @@ const AdminDashboard = () => {
                                                                 <td className="px-8 py-4">
                                                                     <h4 className="font-bold text-gray-900 group-hover:text-red-600 transition-colors truncate max-w-[200px]">{product.name}</h4>
                                                                     <p className="text-xs text-gray-500 mt-0.5">{product.category}</p>
+                                                                    <div className="flex flex-wrap gap-1 mt-1 transition-opacity opacity-70">
+                                                                        {Array.isArray(product.sizes) && product.sizes.map(size => (
+                                                                            <span key={size} className="text-[9px] bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 text-gray-500 font-bold">{size}</span>
+                                                                        ))}
+                                                                    </div>
                                                                 </td>
                                                                 <td className="px-8 py-4">
                                                                     <span className="font-bold text-gray-900">
@@ -492,6 +497,11 @@ const AdminDashboard = () => {
                                                             <div className="flex-grow min-w-0">
                                                                 <h4 className="font-bold text-gray-900 truncate leading-tight">{product.name}</h4>
                                                                 <p className="text-xs text-gray-500 mt-0.5">{product.category}</p>
+                                                                <div className="flex flex-wrap gap-1.5 mt-2">
+                                                                    {Array.isArray(product.sizes) && product.sizes.map(size => (
+                                                                        <span key={size} className="text-[10px] bg-white px-2 py-0.5 rounded-lg border border-gray-200 text-gray-600 font-black shadow-sm">{size}</span>
+                                                                    ))}
+                                                                </div>
                                                                 <p className="font-black text-red-600 mt-1">{formatPrice(product.price)}</p>
                                                             </div>
                                                         </div>
