@@ -80,8 +80,6 @@ export const CartProvider = ({ children }) => {
             `Hello RONA, I'd like to order:\n\n` +
             `*Product:* ${product.name}\n` +
             `*Price:* ${formatPrice(product.price)}\n` +
-            `*Size:* ${size}\n` +
-            `*Color:* ${color}\n\n` +
             `Please let me know the next steps.`
         );
         window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
@@ -96,7 +94,7 @@ export const CartProvider = ({ children }) => {
         ).join('\n');
 
         const message = encodeURIComponent(
-            `Hello RONA, I'd like to place an order:\n\n` +
+            `Hello Rona, I'd like to place an order:\n\n` +
             `${itemsList}\n\n` +
             `*Total:* ${formatPrice(total)}\n\n` +
             `Please confirm my order.`

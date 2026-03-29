@@ -27,6 +27,7 @@ const AdminDashboard = () => {
         imageFiles: [], // New local files to upload
         is_out_of_stock: false,
         on_offer: false,
+        is_highlighted: false,
         original_price: "",
     });
 
@@ -119,6 +120,7 @@ const AdminDashboard = () => {
                 images: uploadedUrls,
                 is_out_of_stock: formData.is_out_of_stock,
                 on_offer: formData.on_offer,
+                is_highlighted: formData.is_highlighted,
                 original_price: formData.on_offer ? parseFloat(formData.original_price) : null,
             };
 
@@ -176,6 +178,7 @@ const AdminDashboard = () => {
             imageFiles: [],
             is_out_of_stock: item.is_out_of_stock || false,
             on_offer: item.on_offer || false,
+            is_highlighted: item.is_highlighted || false,
             original_price: item.original_price || "",
         });
         setIsModalOpen(true);
@@ -424,6 +427,11 @@ const AdminDashboard = () => {
                                                                                 Out of Stock
                                                                             </span>
                                                                         )}
+                                                                        {product.is_highlighted && (
+                                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 text-[10px] font-black uppercase tracking-widest">
+                                                                                Highlighted
+                                                                            </span>
+                                                                        )}
                                                                         {product.on_offer && (
                                                                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
                                                                                 Offer
@@ -490,6 +498,11 @@ const AdminDashboard = () => {
                                                                 {product.is_out_of_stock && (
                                                                     <span className="px-2 py-0.5 rounded-full bg-red-50 text-red-600 text-[9px] font-black uppercase tracking-widest">
                                                                         Out of Stock
+                                                                    </span>
+                                                                )}
+                                                                {product.is_highlighted && (
+                                                                    <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-[9px] font-black uppercase tracking-widest">
+                                                                        Highlighted
                                                                     </span>
                                                                 )}
                                                                 {product.on_offer && (
@@ -690,6 +703,16 @@ const AdminDashboard = () => {
                                             <div className="flex flex-col">
                                                 <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Offer Visibility</span>
                                                 <span className={`text-xs font-bold ${formData.on_offer ? "text-emerald-600" : "text-gray-900"}`}>{formData.on_offer ? "On Offer" : "Regular Price"}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-3 p-4 bg-gray-50 border border-gray-100 rounded-2xl hover:bg-white hover:border-red-100 transition-all cursor-pointer group col-span-2" onClick={() => setFormData({ ...formData, is_highlighted: !formData.is_highlighted })}>
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${formData.is_highlighted ? "bg-red-600 text-white" : "bg-gray-100 text-gray-400 group-hover:bg-red-50 group-hover:text-red-400"}`}>
+                                                <TrendingUp size={18} />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Hero Highlights</span>
+                                                <span className={`text-xs font-bold ${formData.is_highlighted ? "text-red-600" : "text-gray-900"}`}>{formData.is_highlighted ? "Added to Highlights" : "Regular List"}</span>
                                             </div>
                                         </div>
                                     </div>
