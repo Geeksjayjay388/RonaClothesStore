@@ -281,17 +281,16 @@ const AdminDashboard = () => {
                                 <div className="flex items-center gap-3">
                                     {activeTab === "products" && (
                                         <div className="flex items-center gap-3">
-                                            <select
-                                                value={categoryFilter}
-                                                onChange={(e) => setCategoryFilter(e.target.value)}
-                                                className="bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-red-500 transition-all shadow-sm"
-                                            >
-                                                <option value="All">All Categories</option>
-                                                <option value="Clothes">Clothes</option>
-                                                <option value="Curtains">Curtains</option>
-                                                <option value="Bags">Bags</option>
-                                                <option value="Dress">Dress</option>
-                                            </select>
+                                            <div className="relative">
+                                                <Layers className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Filter by category..."
+                                                    value={categoryFilter === "All" ? "" : categoryFilter}
+                                                    onChange={(e) => setCategoryFilter(e.target.value || "All")}
+                                                    className="pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-bold focus:outline-none focus:border-red-500 transition-all shadow-sm w-48"
+                                                />
+                                            </div>
                                             <button
                                                 onClick={() => {
                                                     setModalMode("product");
@@ -635,21 +634,17 @@ const AdminDashboard = () => {
                                     </div>
                                     <div>
                                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Category</label>
-                                        <select
+                                        <input
                                             required
+                                            type="text"
                                             value={formData.category}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                             className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-sm"
-                                        >
-                                            <option value="">Select Category</option>
-                                            <option value="Clothes">Clothes</option>
-                                            <option value="Curtains">Curtains</option>
-                                            <option value="Bags">Bags</option>
-                                            <option value="Dress">Dress</option>
-                                        </select>
+                                            placeholder="e.g. Clothes, Curtains, etc."
+                                        />
                                     </div>
                                     <AnimatePresence>
-                                        {formData.category?.toLowerCase() !== 'curtains' && (
+                                        {formData.category?.toLowerCase() !== 'curtains' && formData.category?.toLowerCase() !== 'curtain' && (
                                             <motion.div
                                                 initial={{ opacity: 0, height: 0 }}
                                                 animate={{ opacity: 1, height: 'auto' }}
