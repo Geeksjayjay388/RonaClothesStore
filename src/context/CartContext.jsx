@@ -32,6 +32,10 @@ export const CartProvider = ({ children }) => {
                 return updatedItems;
             } else {
                 // Item does not exist, add it
+                const priceNum = typeof product.price === 'string'
+                    ? parseFloat(product.price.replace(/[^0-9.-]+/g, ""))
+                    : product.price;
+
                 return [...prevItems, { ...product, price: priceNum, quantity: 1, size }];
             }
         });
