@@ -8,6 +8,8 @@ A premium, modern, and chic e-commerce storefront built with React, Vite, and Ta
 - **Dynamic Routing:** Seamless navigation using `react-router-dom` across multiple pages (Home, Store, Collections, About, Profile, Cart).
 - **Modern Styling:** Powered by Tailwind CSS (v4) with global Urbanist typography.
 - **Micro-Animations:** Fluid transitions and dynamic text reveals using Framer Motion and native CSS transitions.
+- **Dynamic Category Filtering:** Easily filter products by category (Clothes, Curtains, Bags, Dress) in both the store and admin dashboard.
+- **Intelligent Inventory Management:** Conditional sizing logic that automatically disables size options for specific categories like "Curtains".
 - **Responsive Layout:** Optimized for mobile, tablet, and desktop viewing.
 - **Component-Based Architecture:** Modular React components for easy maintenance and scalability.
 

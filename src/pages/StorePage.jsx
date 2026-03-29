@@ -11,6 +11,7 @@ const StorePage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("All");
     const [previewProduct, setPreviewProduct] = useState(null);
     const { addToCart, orderOnWhatsApp } = useCart();
 
@@ -45,9 +46,14 @@ const StorePage = () => {
         };
     }, []);
 
-    const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredProducts = products.filter(product => {
+        const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
+        const matchesCategory = selectedCategory === "All" ||
+            product.category?.toLowerCase() === selectedCategory.toLowerCase();
+        return matchesSearch && matchesCategory;
+    });
+
+    const categories = ["All", "Clothes", "Curtains", "Bags", "Dress"];
 
     return (
         <div className="min-h-screen flex flex-col font-sans bg-gray-50">
@@ -88,6 +94,22 @@ const StorePage = () => {
                                     className="w-full px-8 py-4 rounded-full bg-white/10 border border-white/20 text-white focus:outline-none focus:border-red-500 focus:bg-white/15 transition-all text-lg backdrop-blur-sm placeholder:text-gray-400"
                                 />
                             </div>
+                        </div>
+
+                        {/* Category Filters */}
+                        <div className="mt-12 flex flex-wrap gap-3 overflow-x-auto pb-4 no-scrollbar">
+                            {categories.map((cat) => (
+                                <button
+                                    key={cat}
+                                    onClick={() => setSelectedCategory(cat)}
+                                    className={`px-8 py-3 rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all whitespace-nowrap border-2 ${selectedCategory === cat
+                                        ? "bg-red-600 border-red-600 text-white shadow-lg shadow-red-900/20"
+                                        : "bg-white/5 border-white/10 text-white/60 hover:border-white/20 hover:text-white"
+                                        }`}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </section>

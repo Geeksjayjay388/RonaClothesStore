@@ -11,6 +11,7 @@ const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState("overview");
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([]);
+    const [categoryFilter, setCategoryFilter] = useState("All");
     const { profile } = useAuth();
 
     // Form States
@@ -141,6 +142,7 @@ const AdminDashboard = () => {
             setIsModalOpen(false);
             setEditItem(null);
             setFormData({ name: "", price: "", description: "", category: "", image_url: "", images: [], imageFiles: [], sizes: "" });
+            setCategoryFilter("All"); // Reset filter to show new item
             fetchData();
         } catch (error) {
             toast.dismiss('upload-toast');
@@ -278,17 +280,30 @@ const AdminDashboard = () => {
 
                                 <div className="flex items-center gap-3">
                                     {activeTab === "products" && (
-                                        <button
-                                            onClick={() => {
-                                                setModalMode("product");
-                                                setEditItem(null);
-                                                setIsModalOpen(true);
-                                            }}
-                                            className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-red-100 text-sm whitespace-nowrap"
-                                        >
-                                            <Plus size={18} />
-                                            <span>Add Product</span>
-                                        </button>
+                                        <div className="flex items-center gap-3">
+                                            <select
+                                                value={categoryFilter}
+                                                onChange={(e) => setCategoryFilter(e.target.value)}
+                                                className="bg-white border border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-red-500 transition-all shadow-sm"
+                                            >
+                                                <option value="All">All Categories</option>
+                                                <option value="Clothes">Clothes</option>
+                                                <option value="Curtains">Curtains</option>
+                                                <option value="Bags">Bags</option>
+                                                <option value="Dress">Dress</option>
+                                            </select>
+                                            <button
+                                                onClick={() => {
+                                                    setModalMode("product");
+                                                    setEditItem(null);
+                                                    setIsModalOpen(true);
+                                                }}
+                                                className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-red-100 text-sm whitespace-nowrap"
+                                            >
+                                                <Plus size={18} />
+                                                <span>Add Product</span>
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -403,75 +418,77 @@ const AdminDashboard = () => {
                                                             </td>
                                                         </tr>
                                                     ) : (
-                                                        products.map((product) => (
-                                                            <tr key={product.id} className="group hover:bg-gray-50/50 transition-colors">
-                                                                <td className="px-8 py-4">
-                                                                    <div className="w-14 h-14 rounded-xl bg-gray-100 overflow-hidden">
-                                                                        <img
-                                                                            src={product.image_url || product.image}
-                                                                            alt={product.name}
-                                                                            className="w-full h-full object-cover"
-                                                                        />
-                                                                    </div>
-                                                                </td>
-                                                                <td className="px-8 py-4">
-                                                                    <h4 className="font-bold text-gray-900 group-hover:text-red-600 transition-colors truncate max-w-[200px]">{product.name}</h4>
-                                                                    <p className="text-xs text-gray-500 mt-0.5">{product.category}</p>
-                                                                    <div className="flex flex-wrap gap-1 mt-1 transition-opacity opacity-70">
-                                                                        {Array.isArray(product.sizes) && product.sizes.map(size => (
-                                                                            <span key={size} className="text-[9px] bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 text-gray-500 font-bold">{size}</span>
-                                                                        ))}
-                                                                    </div>
-                                                                </td>
-                                                                <td className="px-8 py-4">
-                                                                    <span className="font-bold text-gray-900">
-                                                                        {formatPrice(product.price)}
-                                                                    </span>
-                                                                </td>
-                                                                <td className="px-8 py-4">
-                                                                    <div className="flex flex-col gap-1">
-                                                                        {product.is_out_of_stock && (
-                                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest">
-                                                                                Out of Stock
-                                                                            </span>
-                                                                        )}
-                                                                        {product.is_highlighted && (
-                                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 text-[10px] font-black uppercase tracking-widest">
-                                                                                Highlighted
-                                                                            </span>
-                                                                        )}
-                                                                        {product.on_offer && (
-                                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
-                                                                                Offer
-                                                                            </span>
-                                                                        )}
-                                                                        {!product.is_out_of_stock && !product.on_offer && (
-                                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
-                                                                                Active
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                </td>
-                                                                <td className="px-8 py-4 text-right">
-                                                                    <div className="flex items-center justify-end gap-2">
-                                                                        <button
-                                                                            onClick={() => openEditModal(product, "product")}
-                                                                            className="p-2 hover:bg-white rounded-lg transition-colors text-gray-400 hover:text-red-600 border border-transparent hover:border-gray-100"
-                                                                            title="Edit"
-                                                                        >
-                                                                            <Edit2 size={16} />
-                                                                        </button>
-                                                                        <button
-                                                                            onClick={() => handleDelete(product.id, "products")}
-                                                                            className="p-2 hover:bg-red-50 rounded-lg transition-colors text-gray-400 hover:text-red-600 border border-transparent hover:border-red-100"
-                                                                            title="Delete"
-                                                                        >
-                                                                            <Trash2 size={16} />
-                                                                        </button>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        ))
+                                                        products
+                                                            .filter(p => categoryFilter === "All" || p.category?.toLowerCase() === categoryFilter.toLowerCase())
+                                                            .map((product) => (
+                                                                <tr key={product.id} className="group hover:bg-gray-50/50 transition-colors">
+                                                                    <td className="px-8 py-4">
+                                                                        <div className="w-14 h-14 rounded-xl bg-gray-100 overflow-hidden">
+                                                                            <img
+                                                                                src={product.image_url || product.image}
+                                                                                alt={product.name}
+                                                                                className="w-full h-full object-cover"
+                                                                            />
+                                                                        </div>
+                                                                    </td>
+                                                                    <td className="px-8 py-4">
+                                                                        <h4 className="font-bold text-gray-900 group-hover:text-red-600 transition-colors truncate max-w-[200px]">{product.name}</h4>
+                                                                        <p className="text-xs text-gray-500 mt-0.5">{product.category}</p>
+                                                                        <div className="flex flex-wrap gap-1 mt-1 transition-opacity opacity-70">
+                                                                            {Array.isArray(product.sizes) && product.sizes.map(size => (
+                                                                                <span key={size} className="text-[9px] bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 text-gray-500 font-bold">{size}</span>
+                                                                            ))}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td className="px-8 py-4">
+                                                                        <span className="font-bold text-gray-900">
+                                                                            {formatPrice(product.price)}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td className="px-8 py-4">
+                                                                        <div className="flex flex-col gap-1">
+                                                                            {product.is_out_of_stock && (
+                                                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest">
+                                                                                    Out of Stock
+                                                                                </span>
+                                                                            )}
+                                                                            {product.is_highlighted && (
+                                                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 text-[10px] font-black uppercase tracking-widest">
+                                                                                    Highlighted
+                                                                                </span>
+                                                                            )}
+                                                                            {product.on_offer && (
+                                                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
+                                                                                    Offer
+                                                                                </span>
+                                                                            )}
+                                                                            {!product.is_out_of_stock && !product.on_offer && (
+                                                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
+                                                                                    Active
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td className="px-8 py-4 text-right">
+                                                                        <div className="flex items-center justify-end gap-2">
+                                                                            <button
+                                                                                onClick={() => openEditModal(product, "product")}
+                                                                                className="p-2 hover:bg-white rounded-lg transition-colors text-gray-400 hover:text-red-600 border border-transparent hover:border-gray-100"
+                                                                                title="Edit"
+                                                                            >
+                                                                                <Edit2 size={16} />
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() => handleDelete(product.id, "products")}
+                                                                                className="p-2 hover:bg-red-50 rounded-lg transition-colors text-gray-400 hover:text-red-600 border border-transparent hover:border-red-100"
+                                                                                title="Delete"
+                                                                            >
+                                                                                <Trash2 size={16} />
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            ))
                                                     )}
                                                 </tbody>
                                             </table>
@@ -484,71 +501,73 @@ const AdminDashboard = () => {
                                                     No products found. Click 'Add Product' to create one.
                                                 </div>
                                             ) : (
-                                                products.map((product) => (
-                                                    <div key={product.id} className="p-5 space-y-4">
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="w-16 h-16 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100">
-                                                                <img
-                                                                    src={product.image_url || product.image}
-                                                                    alt={product.name}
-                                                                    className="w-full h-full object-cover"
-                                                                />
-                                                            </div>
-                                                            <div className="flex-grow min-w-0">
-                                                                <h4 className="font-bold text-gray-900 truncate leading-tight">{product.name}</h4>
-                                                                <p className="text-xs text-gray-500 mt-0.5">{product.category}</p>
-                                                                <div className="flex flex-wrap gap-1.5 mt-2">
-                                                                    {Array.isArray(product.sizes) && product.sizes.map(size => (
-                                                                        <span key={size} className="text-[10px] bg-white px-2 py-0.5 rounded-lg border border-gray-200 text-gray-600 font-black shadow-sm">{size}</span>
-                                                                    ))}
+                                                products
+                                                    .filter(p => categoryFilter === "All" || p.category?.toLowerCase() === categoryFilter.toLowerCase())
+                                                    .map((product) => (
+                                                        <div key={product.id} className="p-5 space-y-4">
+                                                            <div className="flex items-center gap-4">
+                                                                <div className="w-16 h-16 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100">
+                                                                    <img
+                                                                        src={product.image_url || product.image}
+                                                                        alt={product.name}
+                                                                        className="w-full h-full object-cover"
+                                                                    />
                                                                 </div>
-                                                                <p className="font-black text-red-600 mt-1">{formatPrice(product.price)}</p>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="flex items-center justify-between pt-2 border-t border-gray-50">
-                                                            <div className="flex gap-2">
-                                                                {product.is_out_of_stock && (
-                                                                    <span className="px-2 py-0.5 rounded-full bg-red-50 text-red-600 text-[9px] font-black uppercase tracking-widest">
-                                                                        Out of Stock
-                                                                    </span>
-                                                                )}
-                                                                {product.is_highlighted && (
-                                                                    <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-[9px] font-black uppercase tracking-widest">
-                                                                        Highlighted
-                                                                    </span>
-                                                                )}
-                                                                {product.on_offer && (
-                                                                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest">
-                                                                        Offer
-                                                                    </span>
-                                                                )}
-                                                                {!product.is_out_of_stock && !product.on_offer && (
-                                                                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest">
-                                                                        Active
-                                                                    </span>
-                                                                )}
+                                                                <div className="flex-grow min-w-0">
+                                                                    <h4 className="font-bold text-gray-900 truncate leading-tight">{product.name}</h4>
+                                                                    <p className="text-xs text-gray-500 mt-0.5">{product.category}</p>
+                                                                    <div className="flex flex-wrap gap-1.5 mt-2">
+                                                                        {Array.isArray(product.sizes) && product.sizes.map(size => (
+                                                                            <span key={size} className="text-[10px] bg-white px-2 py-0.5 rounded-lg border border-gray-200 text-gray-600 font-black shadow-sm">{size}</span>
+                                                                        ))}
+                                                                    </div>
+                                                                    <p className="font-black text-red-600 mt-1">{formatPrice(product.price)}</p>
+                                                                </div>
                                                             </div>
 
-                                                            <div className="flex items-center gap-3">
-                                                                <button
-                                                                    onClick={() => openEditModal(product, "product")}
-                                                                    className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-xl text-gray-600 font-bold text-xs transition-colors border border-gray-100"
-                                                                >
-                                                                    <Edit2 size={14} />
-                                                                    <span>Edit</span>
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleDelete(product.id, "products")}
-                                                                    className="flex items-center gap-1.5 px-3 py-2 bg-red-50 hover:bg-red-600 rounded-xl text-red-600 hover:text-white font-bold text-xs transition-colors border border-red-100"
-                                                                >
-                                                                    <Trash2 size={14} />
-                                                                    <span>Delete</span>
-                                                                </button>
+                                                            <div className="flex items-center justify-between pt-2 border-t border-gray-50">
+                                                                <div className="flex gap-2">
+                                                                    {product.is_out_of_stock && (
+                                                                        <span className="px-2 py-0.5 rounded-full bg-red-50 text-red-600 text-[9px] font-black uppercase tracking-widest">
+                                                                            Out of Stock
+                                                                        </span>
+                                                                    )}
+                                                                    {product.is_highlighted && (
+                                                                        <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-[9px] font-black uppercase tracking-widest">
+                                                                            Highlighted
+                                                                        </span>
+                                                                    )}
+                                                                    {product.on_offer && (
+                                                                        <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest">
+                                                                            Offer
+                                                                        </span>
+                                                                    )}
+                                                                    {!product.is_out_of_stock && !product.on_offer && (
+                                                                        <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest">
+                                                                            Active
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+
+                                                                <div className="flex items-center gap-3">
+                                                                    <button
+                                                                        onClick={() => openEditModal(product, "product")}
+                                                                        className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-xl text-gray-600 font-bold text-xs transition-colors border border-gray-100"
+                                                                    >
+                                                                        <Edit2 size={14} />
+                                                                        <span>Edit</span>
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleDelete(product.id, "products")}
+                                                                        className="flex items-center gap-1.5 px-3 py-2 bg-red-50 hover:bg-red-600 rounded-xl text-red-600 hover:text-white font-bold text-xs transition-colors border border-red-100"
+                                                                    >
+                                                                        <Trash2 size={14} />
+                                                                        <span>Delete</span>
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                ))
+                                                    ))
                                             )}
                                         </div>
                                     </motion.div>
@@ -616,27 +635,40 @@ const AdminDashboard = () => {
                                     </div>
                                     <div>
                                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Category</label>
-                                        <input
+                                        <select
                                             required
-                                            type="text"
                                             value={formData.category}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
-                                            placeholder="Tops, Shoes, etc."
-                                        />
+                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-sm"
+                                        >
+                                            <option value="">Select Category</option>
+                                            <option value="Clothes">Clothes</option>
+                                            <option value="Curtains">Curtains</option>
+                                            <option value="Bags">Bags</option>
+                                            <option value="Dress">Dress</option>
+                                        </select>
                                     </div>
-                                    <div className="md:col-span-2">
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
-                                            Available Sizes (Comma separated)
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={formData.sizes}
-                                            onChange={(e) => setFormData({ ...formData, sizes: e.target.value })}
-                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
-                                            placeholder="e.g. S, M, L, XL"
-                                        />
-                                    </div>
+                                    <AnimatePresence>
+                                        {formData.category?.toLowerCase() !== 'curtains' && (
+                                            <motion.div
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                className="md:col-span-2 overflow-hidden"
+                                            >
+                                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                                                    Available Sizes (Comma separated)
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.sizes}
+                                                    onChange={(e) => setFormData({ ...formData, sizes: e.target.value })}
+                                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
+                                                    placeholder="e.g. S, M, L, XL"
+                                                />
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
 
                                     <div className="md:col-span-2">
                                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
