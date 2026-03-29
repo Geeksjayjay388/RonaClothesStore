@@ -9,6 +9,19 @@ const ProductPreviewModal = ({ product, isOpen, onClose }) => {
 
     const { addToCart, orderOnWhatsApp } = useCart();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [selectedSize, setSelectedSize] = useState(null);
+
+    // Get available sizes from product, default to standard sizes if none
+    const availableSizes = product.sizes && product.sizes.length > 0
+        ? product.sizes
+        : ["S", "M", "L", "XL"];
+
+    // Set initial size if not set
+    React.useEffect(() => {
+        if (!selectedSize && availableSizes.length > 0) {
+            setSelectedSize(availableSizes[1] || availableSizes[0]); // Default to M or first
+        }
+    }, [product, availableSizes]);
 
     // Combine legacy image_url with new images array, fallback to a placeholder if none
     const allImages = product.images && product.images.length > 0
@@ -146,15 +159,32 @@ const ProductPreviewModal = ({ product, isOpen, onClose }) => {
 
                             <div className="flex-grow mb-8">
                                 <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Description</h4>
-                                <p className="text-gray-600 leading-relaxed text-sm md:text-base">
+                                <p className="text-gray-600 leading-relaxed text-sm md:text-base mb-6">
                                     {product.description || "Everyday comfort with premium materials. Crafted meticulously for those who demand the finest in contemporary fashion."}
                                 </p>
+
+                                {/* Size Selection */}
+                                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Select Size</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {availableSizes.map((size) => (
+                                        <button
+                                            key={size}
+                                            onClick={() => setSelectedSize(size)}
+                                            className={`min-w-[48px] h-12 flex items-center justify-center rounded-xl border-2 font-black text-sm transition-all ${selectedSize === size
+                                                    ? "border-red-600 bg-red-50 text-red-600 shadow-md scale-105"
+                                                    : "border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:text-gray-900"
+                                                }`}
+                                        >
+                                            {size}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
 
                             {/* Action Buttons */}
                             <div className="flex flex-col gap-3 mt-auto">
                                 <button
-                                    onClick={() => !product.is_out_of_stock && addToCart(product)}
+                                    onClick={() => !product.is_out_of_stock && addToCart(product, selectedSize)}
                                     disabled={product.is_out_of_stock}
                                     className={`w-full py-4 rounded-full font-black uppercase tracking-widest text-sm transition-all shadow-lg flex items-center justify-center gap-2 ${product.is_out_of_stock
                                         ? "bg-gray-100 text-gray-400 cursor-not-allowed shadow-none"
@@ -166,7 +196,7 @@ const ProductPreviewModal = ({ product, isOpen, onClose }) => {
 
                                 {orderOnWhatsApp && !product.is_out_of_stock && (
                                     <button
-                                        onClick={() => orderOnWhatsApp(product)}
+                                        onClick={() => orderOnWhatsApp(product, selectedSize)}
                                         className="w-full bg-emerald-500 text-white py-4 rounded-full font-black uppercase tracking-widest text-sm hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
                                     >
                                         <MessageSquare size={18} />

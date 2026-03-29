@@ -155,6 +155,17 @@ const StorePage = () => {
                                             </div>
                                         </div>
                                         <h3 className="text-sm sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-red-600 transition-colors line-clamp-1">{product.name}</h3>
+
+                                        {/* Size Display on Card */}
+                                        <div className="flex flex-wrap gap-1 mb-4">
+                                            {(product.sizes && product.sizes.length > 0 ? product.sizes : ["S", "M", "L", "XL"]).slice(0, 4).map((size) => (
+                                                <span key={size} className="text-[9px] font-black border border-gray-100 px-1.5 py-0.5 rounded-md text-gray-400 bg-gray-50/50">
+                                                    {size}
+                                                </span>
+                                            ))}
+                                            {(product.sizes || []).length > 4 && <span className="text-[9px] font-black text-gray-300">...</span>}
+                                        </div>
+
                                         <p className="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6 flex-grow line-clamp-2">{product.description}</p>
 
                                         <button
@@ -162,7 +173,7 @@ const StorePage = () => {
                                             disabled={product.is_out_of_stock}
                                             className={`w-full py-3 rounded-xl font-bold transition-colors border text-sm tracking-wide ${product.is_out_of_stock
                                                 ? "bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed"
-                                                : "bg-gray-50 text-gray-1000 py-3 rounded-xl font-bold hover:bg-gray-900 hover:text-white border-gray-200 hover:border-gray-900"
+                                                : "bg-gray-50 text-gray-900 hover:bg-gray-900 hover:text-white border-gray-200 hover:border-gray-900"
                                                 }`}
                                         >
                                             {product.is_out_of_stock ? "Out of Stock" : "Add to Cart"}

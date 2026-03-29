@@ -18,11 +18,11 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem("rona_cart", JSON.stringify(cartItems));
     }, [cartItems]);
 
-    const addToCart = (product, size = "M", color = "Default") => {
+    const addToCart = (product, size = "M") => {
         setCartItems((prevItems) => {
-            // Check if item with exact same id, size, and color exists
+            // Check if item with exact same id and size exists
             const existingItemIndex = prevItems.findIndex(
-                (item) => item.id === product.id && item.size === size && item.color === color
+                (item) => item.id === product.id && item.size === size
             );
 
             if (existingItemIndex > -1) {
@@ -32,12 +32,7 @@ export const CartProvider = ({ children }) => {
                 return updatedItems;
             } else {
                 // Item does not exist, add it
-                // Convert price string like "$29.99" to number if necessary, or just rely on product.price being a number
-                const priceNum = typeof product.price === 'string'
-                    ? parseFloat(product.price.replace(/[^0-9.-]+/g, ""))
-                    : product.price;
-
-                return [...prevItems, { ...product, price: priceNum, quantity: 1, size, color }];
+                return [...prevItems, { ...product, price: priceNum, quantity: 1, size }];
             }
         });
 
@@ -57,9 +52,9 @@ export const CartProvider = ({ children }) => {
         });
     };
 
-    const updateQuantity = (id, delta, size, color) => {
+    const updateQuantity = (id, delta, size) => {
         setCartItems(cartItems.map(item => {
-            if (item.id === id && item.size === size && item.color === color) {
+            if (item.id === id && item.size === size) {
                 const newQuantity = Math.max(1, item.quantity + delta);
                 return { ...item, quantity: newQuantity };
             }
@@ -67,20 +62,21 @@ export const CartProvider = ({ children }) => {
         }));
     };
 
-    const removeItem = (id, size, color) => {
-        setCartItems(cartItems.filter(item => !(item.id === id && item.size === size && item.color === color)));
+    const removeItem = (id, size) => {
+        setCartItems(cartItems.filter(item => !(item.id === id && item.size === size)));
     };
 
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
     const whatsappNumber = "+254742424046";
 
-    const orderOnWhatsApp = (product, size = "M", color = "Default") => {
+    const orderOnWhatsApp = (product, size = "M") => {
         const message = encodeURIComponent(
-            `Hello RONA, I'd like to order:\n\n` +
-            `*Product:* ${product.name}\n` +
-            `*Price:* ${formatPrice(product.price)}\n` +
-            `Please let me know the next steps.`
+            `Hello RONA 🛍️,\n\nI'd like to order this item:\n\n` +
+            `✨ *Product:* ${product.name}\n` +
+            `📏 *Size:* ${size}\n` +
+            `💰 *Price:* ${formatPrice(product.price)}\n\n` +
+            `Please let me know how to proceed with payment and delivery. Thank you! 🙏`
         );
         window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
     };
@@ -90,14 +86,14 @@ export const CartProvider = ({ children }) => {
         const total = subtotal;
 
         let itemsList = cartItems.map(item =>
-            `• ${item.name} (${item.size}/${item.color}) x${item.quantity} - ${formatPrice(item.price * item.quantity)}`
-        ).join('\n');
+            `🛍️ *${item.name}*\n   📏 Size: ${item.size}\n   🔢 Qty: ${item.quantity}\n   💰 Price: ${formatPrice(item.price * item.quantity)}`
+        ).join('\n\n');
 
         const message = encodeURIComponent(
-            `Hello Rona, I'd like to place an order:\n\n` +
+            `Hello Rona ✨,\n\nI'd like to place an order for the following items:\n\n` +
             `${itemsList}\n\n` +
-            `*Total:* ${formatPrice(total)}\n\n` +
-            `Please confirm my order.`
+            `⭐ *Total Amount:* ${formatPrice(total)}\n\n` +
+            `Please confirm my order and share payment details. Thank you! 🙏`
         );
         window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
     };

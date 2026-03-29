@@ -53,21 +53,19 @@ const CartPage = () => {
                                                 <div>
                                                     <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">{item.name}</h3>
                                                     <div className="flex gap-4 mt-2 text-xs font-bold tracking-widest text-gray-500 uppercase">
-                                                        <span>{item.color}</span>
-                                                        <span className="w-px h-4 bg-gray-300"></span>
                                                         <span>Size: {item.size}</span>
                                                     </div>
                                                 </div>
-                                                <button onClick={() => removeItem(item.id, item.size, item.color)} className="text-gray-400 hover:text-red-500 transition-colors">
+                                                <button onClick={() => removeItem(item.id, item.size)} className="text-gray-400 hover:text-red-500 transition-colors">
                                                     <X size={20} />
                                                 </button>
                                             </div>
 
                                             <div className="flex justify-between items-end mt-6">
                                                 <div className="flex items-center border border-gray-200 rounded-full">
-                                                    <button onClick={() => updateQuantity(item.id, -1, item.size, item.color)} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-50 rounded-l-full transition-colors">-</button>
+                                                    <button onClick={() => updateQuantity(item.id, -1, item.size)} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-50 rounded-l-full transition-colors">-</button>
                                                     <span className="w-8 text-center font-bold text-sm">{item.quantity}</span>
-                                                    <button onClick={() => updateQuantity(item.id, 1, item.size, item.color)} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-50 rounded-r-full transition-colors">+</button>
+                                                    <button onClick={() => updateQuantity(item.id, 1, item.size)} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-50 rounded-r-full transition-colors">+</button>
                                                 </div>
                                                 <p className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">{formatPrice(item.price * item.quantity)}</p>
                                             </div>

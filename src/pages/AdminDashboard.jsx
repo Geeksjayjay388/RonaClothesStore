@@ -29,6 +29,7 @@ const AdminDashboard = () => {
         on_offer: false,
         is_highlighted: false,
         original_price: "",
+        sizes: "", // New: comma-separated sizes
     });
 
     useEffect(() => {
@@ -122,6 +123,7 @@ const AdminDashboard = () => {
                 on_offer: formData.on_offer,
                 is_highlighted: formData.is_highlighted,
                 original_price: formData.on_offer ? parseFloat(formData.original_price) : null,
+                sizes: formData.sizes ? formData.sizes.split(',').map(s => s.trim()) : [],
             };
 
             let error;
@@ -138,7 +140,7 @@ const AdminDashboard = () => {
             toast.success(`${modalMode.charAt(0).toUpperCase() + modalMode.slice(1)} saved successfully!`);
             setIsModalOpen(false);
             setEditItem(null);
-            setFormData({ name: "", price: "", description: "", category: "", image_url: "", images: [], imageFiles: [] });
+            setFormData({ name: "", price: "", description: "", category: "", image_url: "", images: [], imageFiles: [], sizes: "" });
             fetchData();
         } catch (error) {
             toast.dismiss('upload-toast');
@@ -180,6 +182,7 @@ const AdminDashboard = () => {
             on_offer: item.on_offer || false,
             is_highlighted: item.is_highlighted || false,
             original_price: item.original_price || "",
+            sizes: Array.isArray(item.sizes) ? item.sizes.join(', ') : "",
         });
         setIsModalOpen(true);
     };
@@ -610,6 +613,18 @@ const AdminDashboard = () => {
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                             className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
                                             placeholder="Tops, Shoes, etc."
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                                            Available Sizes (Comma separated)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={formData.sizes}
+                                            onChange={(e) => setFormData({ ...formData, sizes: e.target.value })}
+                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-red-500 focus:bg-white transition-all"
+                                            placeholder="e.g. S, M, L, XL"
                                         />
                                     </div>
 
