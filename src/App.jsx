@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ContactPage from "./pages/ContactPage";
 import ProductPage from "./pages/ProductPage";
+import SellPage from "./pages/SellPage";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -71,6 +72,14 @@ const AppContent = () => {
           <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route
+            path="/sell"
+            element={
+              <ProtectedRoute>
+                <SellPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/profile"
             element={

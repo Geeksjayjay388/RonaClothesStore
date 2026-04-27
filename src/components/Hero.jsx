@@ -12,10 +12,10 @@ const categories = [
 ];
 
 const carouselSlides = [
-    { image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=900&h=700", label: "Footwear", tag: "Limited Edition" },
-    { image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&q=80&w=900&h=700", label: "Jackets", tag: "New Drop" },
-    { image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=900&h=700", label: "Curtains", tag: "Home Collection" },
-    { image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=900&h=700", label: "Women's Wear", tag: "2026 Season" },
+    { image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=100&w=2560&h=1440", label: "Footwear", tag: "Limited Edition" },
+    { image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=100&w=2560&h=1440", label: "Jackets", tag: "New Drop" },
+    { image: "https://images.unsplash.com/photo-1630655107617-c8731a3ba3d6?auto=format&fit=crop&q=100&w=2560&h=1440", label: "Curtains", tag: "Home Collection" },
+    { image: "https://images.unsplash.com/photo-1613915617430-8ab0fd7c6baf?auto=format&fit=crop&q=100&w=2560&h=1440", label: "Women's Wear", tag: "2026 Season" },
 ];
 
 const Hero = () => {

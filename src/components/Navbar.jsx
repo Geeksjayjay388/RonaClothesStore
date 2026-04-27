@@ -65,8 +65,15 @@ const Navbar = () => {
         }
     };
 
-    const isActive = (path) =>
-        location.pathname === path || (path === "/admin" && location.pathname.startsWith("/admin"));
+    const isActive = (path) => {
+        if (path === "/store") {
+            return location.pathname === "/store" && !location.search.includes("cat=new");
+        }
+        if (path === "/store?cat=new") {
+            return location.pathname === "/store" && location.search.includes("cat=new");
+        }
+        return location.pathname === path || (path === "/admin" && location.pathname.startsWith("/admin"));
+    };
 
     return (
         <>
@@ -156,12 +163,13 @@ const Navbar = () => {
 
                     {/* RIGHT — Nav links + Icons */}
                     <div className="hidden md:flex items-center gap-6 shrink-0 z-50">
-                        <Link to="/" className={`text-[11px] font-black tracking-[0.18em] uppercase transition-colors ${isActive("/") ? "text-red-600" : "text-gray-900 hover:text-red-600"}`}>Home</Link>
-                        <Link to="/store" className={`text-[11px] font-black tracking-[0.18em] uppercase transition-colors ${isActive("/store") ? "text-red-600" : "text-gray-900 hover:text-red-600"}`}>Collections</Link>
-                        <Link to="/store?cat=new" className={`text-[11px] font-black tracking-[0.18em] uppercase transition-colors ${location.search.includes("new") ? "text-red-600" : "text-gray-900 hover:text-red-600"}`}>New Arrivals</Link>
-                        <Link to="/about" className={`text-[11px] font-black tracking-[0.18em] uppercase transition-colors ${isActive("/about") ? "text-red-600" : "text-gray-900 hover:text-red-600"}`}>Our Story</Link>
+                        <Link to="/" className={`text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors ${isActive("/") ? "text-red-600" : "text-gray-900 hover:text-red-600"}`}>Home</Link>
+                        <Link to="/store" className={`text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors ${isActive("/store") ? "text-red-600" : "text-gray-900 hover:text-red-600"}`}>Collections</Link>
+                        <Link to="/store?cat=new" className={`text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors ${isActive("/store?cat=new") ? "text-red-600" : "text-gray-900 hover:text-red-600"}`}>New Arrivals</Link>
+                        <Link to="/about" className={`text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors ${isActive("/about") ? "text-red-600" : "text-gray-900 hover:text-red-600"}`}>Our Story</Link>
+                        <Link to="/sell" className={`text-[11px] font-semibold tracking-[0.14em] uppercase transition-colors ${isActive("/sell") ? "text-red-600" : "text-gray-900 hover:text-red-600"}`}>Sell on Rona</Link>
                         {isAdmin && (
-                            <Link to="/admin" className="text-[11px] font-black tracking-[0.18em] uppercase text-red-600 flex items-center gap-1">
+                            <Link to="/admin" className="text-[11px] font-semibold tracking-[0.14em] uppercase text-red-600 flex items-center gap-1">
                                 <span className="w-1.5 h-1.5 bg-red-600 rounded-full animate-pulse"></span>Admin
                             </Link>
                         )}
@@ -176,25 +184,28 @@ const Navbar = () => {
                                 )}
                             </Link>
                             {user ? (
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[11px] font-black tracking-[0.18em] uppercase text-gray-900 hidden lg:block">
-                                        Hi, {profile?.first_name}
-                                    </span>
-                                    <Link to="/profile" className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200 hover:border-red-300 transition-all">
+                                <Link to="/profile" className="flex items-center gap-2 lg:gap-3 bg-transparent lg:bg-gray-50 lg:border lg:border-gray-200 rounded-full lg:pl-3 lg:pr-1 lg:py-1 hover:border-red-300 hover:shadow-md hover:shadow-red-500/10 transition-all group">
+                                    <div className="hidden lg:flex items-center gap-1.5 pl-1">
+                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-red-500 transition-colors">Hi,</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.15em] text-gray-900 truncate max-w-[80px]">
+                                            {profile?.first_name || "User"}
+                                        </span>
+                                    </div>
+                                    <div className="w-8 h-8 lg:w-7 lg:h-7 rounded-full bg-white flex items-center justify-center overflow-hidden border border-gray-200 lg:border-transparent group-hover:border-red-200 transition-colors shrink-0 shadow-sm">
                                         {profile?.avatar_url ? (
                                             <img src={`${profile.avatar_url}?t=${Date.now()}`} alt="Profile" className="w-full h-full object-cover" />
                                         ) : (
-                                            <User size={16} />
+                                            <User size={14} className="text-gray-700" />
                                         )}
-                                    </Link>
-                                </div>
+                                    </div>
+                                </Link>
                             ) : (
                                 <div className="flex items-center gap-3">
-                                    <Link to="/login" className="text-[11px] font-black tracking-[0.18em] uppercase text-gray-900 hover:text-red-600 transition-colors">
+                                    <Link to="/login" className="text-[11px] font-semibold tracking-[0.14em] uppercase text-gray-900 hover:text-red-600 transition-colors">
                                         Log In
                                     </Link>
                                     <span className="text-gray-300 hidden lg:block">|</span>
-                                    <Link to="/signup" className="text-[11px] font-black tracking-[0.18em] uppercase text-gray-900 hover:text-red-600 transition-colors hidden lg:block">
+                                    <Link to="/signup" className="text-[11px] font-semibold tracking-[0.14em] uppercase text-gray-900 hover:text-red-600 transition-colors hidden lg:block">
                                         Sign Up
                                     </Link>
                                 </div>
@@ -309,20 +320,26 @@ const Navbar = () => {
                                         { to: "/store", label: "Collections" },
                                         { to: "/store?cat=new", label: "New Arrivals" },
                                         { to: "/about", label: "Our Story" },
+                                        { to: "/sell", label: "Sell on Rona" },
                                         { to: "/contact", label: "Contact" },
                                     ].map(({ to, label }) => (
-                                        <Link key={to} to={to} className="text-2xl font-black text-gray-900 lowercase tracking-tighter hover:text-red-600 transition-colors">{label}</Link>
+                                        <Link key={to} to={to} className={`text-2xl font-black lowercase tracking-tighter hover:text-red-600 transition-colors ${isActive(to) ? "text-red-600" : "text-gray-900"}`}>{label}</Link>
                                     ))}
                                     {isAdmin && <Link to="/admin" className="text-2xl font-black text-red-600 lowercase tracking-tighter">Admin</Link>}
                                 </div>
                                 <div className="px-6 pb-8 pt-4 border-t border-gray-100">
                                     {user ? (
                                         <div className="flex flex-col gap-4">
-                                            <Link to="/profile" className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 overflow-hidden">
-                                                    {profile?.avatar_url ? <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" /> : <User size={20} />}
+                                            <Link to="/profile" className="flex items-center gap-4 bg-gray-50/50 border border-gray-100 p-3 rounded-2xl hover:bg-gray-50 hover:border-red-100 transition-colors group">
+                                                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center border border-gray-200 overflow-hidden shrink-0 shadow-sm group-hover:border-red-200 transition-colors">
+                                                    {profile?.avatar_url ? <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" /> : <User size={20} className="text-gray-400 group-hover:text-red-500 transition-colors" />}
                                                 </div>
-                                                <span className="font-bold text-gray-900">Hi, {profile?.first_name || "User"}</span>
+                                                <div className="flex flex-col">
+                                                    <span className="text-[9px] font-black tracking-[0.2em] uppercase text-red-500 mb-0.5">Welcome Back</span>
+                                                    <span className="text-sm font-black tracking-widest uppercase text-gray-900">
+                                                        {profile?.first_name || "User"}
+                                                    </span>
+                                                </div>
                                             </Link>
                                             <button onClick={() => signOut()} className="w-full py-3 text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-red-600 transition-colors text-left">Sign Out</button>
                                         </div>

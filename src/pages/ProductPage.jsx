@@ -223,17 +223,7 @@ const ProductPage = () => {
                             )}
                         </div>
 
-                        {/* Extra Details */}
-                        <div className="mt-12 flex flex-col gap-4 border-t border-gray-100 pt-8">
-                            <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                <span className="text-xs font-black uppercase tracking-widest text-gray-500">Shipping</span>
-                                <span className="text-sm font-bold text-gray-900">Free over $200</span>
-                            </div>
-                            <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                <span className="text-xs font-black uppercase tracking-widest text-gray-500">Returns</span>
-                                <span className="text-sm font-bold text-gray-900">Within 30 Days</span>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </main>

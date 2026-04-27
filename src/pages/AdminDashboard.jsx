@@ -14,8 +14,12 @@ import {
   EyeOff,
   Tags,
   Star,
+  ShieldCheck,
+  MessagesSquare,
+  CheckCircle2,
+  XCircle,
+  PhoneCall,
 } from "lucide-react";
-import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
 import { formatPrice } from "../lib/formatters";
 import { supabase } from "../lib/supabase";
@@ -40,13 +44,17 @@ const AdminDashboard = () => {
   const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const [products, setProducts] = useState([]);
+  const [sellerRequests, setSellerRequests] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
+  const [isFetchingRequests, setIsFetchingRequests] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [updatingRequestId, setUpdatingRequestId] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [requestStatusFilter, setRequestStatusFilter] = useState("all");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -70,8 +78,27 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchSellerRequests = async () => {
+    setIsFetchingRequests(true);
+    try {
+      const { data, error } = await supabase
+        .from("seller_requests")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setSellerRequests(data || []);
+    } catch (error) {
+      toast.error(error.message || "Failed to fetch seller requests");
+      console.error("Fetch seller requests error:", error);
+    } finally {
+      setIsFetchingRequests(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchSellerRequests();
 
     const productsChannel = supabase
       .channel("admin-products-changes")
@@ -82,8 +109,18 @@ const AdminDashboard = () => {
       )
       .subscribe();
 
+    const requestsChannel = supabase
+      .channel("admin-seller-requests-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "seller_requests" },
+        fetchSellerRequests
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(productsChannel);
+      supabase.removeChannel(requestsChannel);
     };
   }, []);
 
@@ -118,6 +155,13 @@ const AdminDashboard = () => {
     });
   }, [products, searchTerm, categoryFilter, statusFilter]);
 
+  const filteredSellerRequests = useMemo(() => {
+    return sellerRequests.filter((request) => {
+      if (requestStatusFilter === "all") return true;
+      return request.status === requestStatusFilter;
+    });
+  }, [sellerRequests, requestStatusFilter]);
+
   const stats = useMemo(() => {
     const totalProducts = products.length;
     const outOfStock = products.filter((p) => p.is_out_of_stock).length;
@@ -125,9 +169,18 @@ const AdminDashboard = () => {
     const onOffer = products.filter((p) => p.on_offer).length;
     const highlighted = products.filter((p) => p.is_highlighted).length;
     const inventoryValue = products.reduce((sum, p) => sum + Number(p.price || 0), 0);
+    const pendingRequests = sellerRequests.filter((request) => request.status === "pending").length;
 
-    return { totalProducts, inStock, outOfStock, onOffer, highlighted, inventoryValue };
-  }, [products]);
+    return {
+      totalProducts,
+      inStock,
+      outOfStock,
+      onOffer,
+      highlighted,
+      inventoryValue,
+      pendingRequests,
+    };
+  }, [products, sellerRequests]);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -175,6 +228,25 @@ const AdminDashboard = () => {
       console.error("Delete error:", error);
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const updateSellerRequestStatus = async (id, status) => {
+    setUpdatingRequestId(id);
+    try {
+      const { error } = await supabase
+        .from("seller_requests")
+        .update({ status })
+        .eq("id", id);
+
+      if (error) throw error;
+      toast.success("Request status updated");
+      await fetchSellerRequests();
+    } catch (error) {
+      toast.error(error.message || "Failed to update request status");
+      console.error("Update seller request status error:", error);
+    } finally {
+      setUpdatingRequestId(null);
     }
   };
 
@@ -270,126 +342,148 @@ const AdminDashboard = () => {
     }
   };
 
-  const cardClass = "bg-white border border-gray-200 rounded-3xl p-6 shadow-sm";
+  const cardClass = "bg-white border border-gray-200 rounded-2xl p-6";
   const kpiCards = [
     { label: "Total Products", value: stats.totalProducts, icon: Package },
     { label: "In Stock", value: stats.inStock, icon: Eye },
     { label: "Out of Stock", value: stats.outOfStock, icon: EyeOff },
     { label: "On Offer", value: stats.onOffer, icon: Tags },
     { label: "Highlighted", value: stats.highlighted, icon: Star },
+    { label: "Pending Requests", value: stats.pendingRequests, icon: MessagesSquare },
     { label: "Inventory Value", value: formatPrice(stats.inventoryValue), icon: LayoutDashboard },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
-      <Navbar />
+    <div className="min-h-screen bg-[#f4f5f7] text-gray-900">
+      <div className="flex min-h-screen">
+        <aside className="w-[280px] border-r border-gray-200 bg-white px-5 py-6 hidden lg:flex lg:flex-col">
+          <div className="px-3 mb-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2">
+              Rona
+            </p>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900">Admin Dashboard</h1>
+          </div>
 
-      <main className="flex-grow pt-24 pb-12">
-        <div className="container mx-auto px-6 lg:px-8 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8">
-            <aside className="space-y-5">
-              <div className={cardClass}>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-red-600 text-white font-black flex items-center justify-center overflow-hidden">
-                    {profile?.avatar_url ? (
-                      <img src={profile.avatar_url} alt="Admin" className="w-full h-full object-cover" />
-                    ) : (
-                      <span>{profile?.first_name?.[0] || "A"}</span>
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-black truncate">
-                      {profile?.first_name || "Admin"} {profile?.last_name || ""}
-                    </p>
-                    <p className="text-[10px] text-red-600 font-black uppercase tracking-widest">
-                      Dashboard Admin
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className={`${cardClass} p-3`}>
-                <button
-                  onClick={() => setActiveTab("overview")}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition ${
-                    activeTab === "overview"
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <LayoutDashboard size={18} />
-                  Overview
-                </button>
-                <button
-                  onClick={() => setActiveTab("products")}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition ${
-                    activeTab === "products"
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <Package size={18} />
-                  Products
-                </button>
-              </div>
-
-              <div className="rounded-3xl bg-red-600 p-6 text-white shadow-lg shadow-red-200">
-                <p className="text-[10px] font-black uppercase tracking-widest text-red-100 mb-2">
-                  Store Pulse
-                </p>
-                <p className="text-3xl font-black leading-none">{stats.totalProducts}</p>
-                <p className="text-sm text-red-100 mt-2 font-medium">Products currently in your catalog</p>
-              </div>
-            </aside>
-
-            <section className="space-y-6">
-              <div className={`${cardClass} flex flex-col md:flex-row md:items-center justify-between gap-4`}>
-                <div>
-                  <h1 className="text-3xl md:text-4xl font-black tracking-tight">
-                    {activeTab === "overview" ? "Admin Overview" : "Product Management"}
-                  </h1>
-                  <p className="text-gray-500 text-sm mt-1">
-                    {activeTab === "overview"
-                      ? "Your operational summary and catalog performance."
-                      : "Search, filter, and manage inventory from one place."}
-                  </p>
-                </div>
-
-                {activeTab === "products" && (
-                  <button
-                    onClick={openCreateModal}
-                    className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-md"
-                  >
-                    <Plus size={18} />
-                    Add Product
-                  </button>
+          <div className="rounded-2xl border border-gray-200 p-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-gray-900 text-white font-semibold flex items-center justify-center overflow-hidden">
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} alt="Admin" className="w-full h-full object-cover" />
+                ) : (
+                  <span>{profile?.first_name?.[0] || "A"}</span>
                 )}
               </div>
+              <div className="min-w-0">
+                <p className="font-semibold truncate text-gray-900">
+                  {profile?.first_name || "Admin"} {profile?.last_name || ""}
+                </p>
+                <p className="text-xs text-gray-500">Store Administrator</p>
+              </div>
+            </div>
+          </div>
+
+          <nav className="space-y-2">
+            <button
+              onClick={() => setActiveTab("overview")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
+                activeTab === "overview"
+                  ? "bg-gray-900 text-white"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              <LayoutDashboard size={18} />
+              Overview
+            </button>
+            <button
+              onClick={() => setActiveTab("products")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
+                activeTab === "products"
+                  ? "bg-gray-900 text-white"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              <Package size={18} />
+              Products
+            </button>
+            <button
+              onClick={() => setActiveTab("requests")}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
+                activeTab === "requests"
+                  ? "bg-gray-900 text-white"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              <MessagesSquare size={18} />
+              Seller Requests
+            </button>
+          </nav>
+
+          <div className="mt-auto rounded-2xl border border-gray-200 bg-gray-50 p-4">
+            <div className="flex items-center gap-2 text-gray-700 mb-2">
+              <ShieldCheck size={16} />
+              <p className="text-xs font-semibold uppercase tracking-widest">Catalog Health</p>
+            </div>
+            <p className="text-3xl font-bold leading-none text-gray-900">{stats.pendingRequests}</p>
+            <p className="text-sm text-gray-600 mt-1">Pending seller requests</p>
+          </div>
+        </aside>
+
+        <main className="flex-1 px-4 py-4 md:px-6 md:py-6 lg:px-8 lg:py-8">
+          <section className="space-y-6 max-w-7xl mx-auto">
+            <div className={`${cardClass} flex flex-col md:flex-row md:items-center justify-between gap-4`}>
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-gray-500 font-semibold mb-2">Admin Panel</p>
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+                  {activeTab === "overview"
+                    ? "Overview"
+                    : activeTab === "products"
+                    ? "Products"
+                    : "Seller Requests"}
+                </h2>
+                <p className="text-gray-500 text-sm mt-1">
+                  {activeTab === "overview"
+                    ? "High-level operational metrics for your store."
+                    : activeTab === "products"
+                    ? "Manage inventory, pricing, and listing status in one place."
+                    : "Track seller submissions and update request statuses."}
+                </p>
+              </div>
+
+              {activeTab === "products" && (
+                <button
+                  onClick={openCreateModal}
+                  className="inline-flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-xl font-medium text-sm"
+                >
+                  <Plus size={18} />
+                  Add Product
+                </button>
+              )}
+            </div>
 
               {activeTab === "overview" ? (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                     {kpiCards.map((card) => (
                       <div key={card.label} className={cardClass}>
-                        <div className="flex items-center justify-between">
-                          <p className="text-[11px] font-black uppercase tracking-widest text-gray-400">
+                        <div className="flex items-center justify-between mb-6">
+                          <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">
                             {card.label}
                           </p>
-                          <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-700">
+                          <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-700 border border-gray-200">
                             {React.createElement(card.icon, { size: 18 })}
                           </div>
                         </div>
-                        <p className="text-2xl font-black mt-5 tracking-tight">{card.value}</p>
+                        <p className="text-2xl font-bold tracking-tight">{card.value}</p>
                       </div>
                     ))}
                   </div>
 
                   <div className={cardClass}>
                     <div className="flex items-center justify-between mb-5">
-                      <h2 className="text-lg font-black tracking-tight">Newest Products</h2>
+                      <h2 className="text-lg font-bold tracking-tight">Newest Products</h2>
                       <button
                         onClick={() => setActiveTab("products")}
-                        className="text-xs font-black uppercase tracking-widest text-red-600 hover:text-red-700"
+                        className="text-xs font-semibold uppercase tracking-widest text-gray-700 hover:text-black"
                       >
                         Manage
                       </button>
@@ -404,10 +498,10 @@ const AdminDashboard = () => {
                             className="w-14 h-14 rounded-xl object-cover bg-gray-100"
                           />
                           <div className="min-w-0 flex-1">
-                            <p className="font-bold truncate">{product.name}</p>
+                            <p className="font-semibold truncate">{product.name}</p>
                             <p className="text-xs text-gray-500">{product.category || "Uncategorized"}</p>
                           </div>
-                          <p className="font-black">{formatPrice(product.price)}</p>
+                          <p className="font-semibold">{formatPrice(product.price)}</p>
                         </div>
                       ))}
                       {products.length === 0 && (
@@ -418,7 +512,7 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                 </>
-              ) : (
+              ) : activeTab === "products" ? (
                 <>
                   <div className={`${cardClass} flex flex-col lg:flex-row gap-3`}>
                     <div className="relative flex-1">
@@ -428,7 +522,7 @@ const AdminDashboard = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         placeholder="Search by name, category or description..."
-                        className="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3 font-medium focus:outline-none focus:border-red-500"
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 font-medium focus:outline-none focus:border-gray-400"
                       />
                     </div>
 
@@ -441,7 +535,7 @@ const AdminDashboard = () => {
                         <select
                           value={categoryFilter}
                           onChange={(e) => setCategoryFilter(e.target.value)}
-                          className="bg-gray-50 border border-gray-200 rounded-2xl pl-9 pr-8 py-3 font-medium focus:outline-none focus:border-red-500"
+                          className="bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-8 py-3 font-medium focus:outline-none focus:border-gray-400"
                         >
                           {categories.map((category) => (
                             <option key={category} value={category}>
@@ -454,7 +548,7 @@ const AdminDashboard = () => {
                       <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 font-medium focus:outline-none focus:border-red-500"
+                        className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-gray-400"
                       >
                         <option value="all">All Status</option>
                         <option value="instock">In Stock</option>
@@ -467,7 +561,7 @@ const AdminDashboard = () => {
 
                   <div className={cardClass}>
                     <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-lg font-black">Products ({filteredProducts.length})</h2>
+                      <h2 className="text-lg font-bold">Products ({filteredProducts.length})</h2>
                       {isFetching && <Loader2 size={18} className="animate-spin text-gray-400" />}
                     </div>
 
@@ -541,7 +635,7 @@ const AdminDashboard = () => {
                                   <button
                                     onClick={() => handleDelete(product.id)}
                                     disabled={deletingId === product.id}
-                                    className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-red-600 hover:border-red-200 disabled:opacity-60"
+                                    className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-black hover:border-gray-300 disabled:opacity-60"
                                   >
                                     {deletingId === product.id ? (
                                       <Loader2 size={15} className="animate-spin" />
@@ -567,21 +661,21 @@ const AdminDashboard = () => {
                               className="w-16 h-16 rounded-xl object-cover bg-gray-100"
                             />
                             <div className="min-w-0 flex-1">
-                              <p className="font-bold truncate">{product.name}</p>
+                              <p className="font-semibold truncate">{product.name}</p>
                               <p className="text-xs text-gray-500 mt-0.5">{product.category || "Uncategorized"}</p>
-                              <p className="font-black mt-1">{formatPrice(product.price)}</p>
+                              <p className="font-semibold mt-1">{formatPrice(product.price)}</p>
                             </div>
                           </div>
                           <div className="flex gap-2 mt-4">
                             <button
                               onClick={() => openEditModal(product)}
-                              className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 font-bold text-xs uppercase tracking-widest"
+                              className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 font-semibold text-xs uppercase tracking-widest"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => handleDelete(product.id)}
-                              className="flex-1 py-2 rounded-xl bg-red-50 text-red-600 font-bold text-xs uppercase tracking-widest"
+                              className="flex-1 py-2 rounded-xl bg-gray-900 text-white font-semibold text-xs uppercase tracking-widest"
                             >
                               Delete
                             </button>
@@ -597,11 +691,149 @@ const AdminDashboard = () => {
                     )}
                   </div>
                 </>
+              ) : (
+                <>
+                  <div className={`${cardClass} flex flex-col md:flex-row md:items-center justify-between gap-3`}>
+                    <div>
+                      <h3 className="text-lg font-bold">Seller Requests</h3>
+                      <p className="text-sm text-gray-500">Review and update inbound seller submissions.</p>
+                    </div>
+                    <select
+                      value={requestStatusFilter}
+                      onChange={(e) => setRequestStatusFilter(e.target.value)}
+                      className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-gray-400"
+                    >
+                      <option value="all">All statuses</option>
+                      <option value="pending">Pending</option>
+                      <option value="contacted">Contacted</option>
+                      <option value="approved">Approved</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                  </div>
+
+                  <div className={cardClass}>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg font-bold">Requests ({filteredSellerRequests.length})</h2>
+                      {isFetchingRequests && <Loader2 size={18} className="animate-spin text-gray-400" />}
+                    </div>
+
+                    <div className="hidden xl:block overflow-x-auto">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="border-b border-gray-100">
+                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Seller</th>
+                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Product</th>
+                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Price</th>
+                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Status</th>
+                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Created</th>
+                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredSellerRequests.map((request) => (
+                            <tr key={request.id} className="border-b border-gray-50 align-top">
+                              <td className="py-4 pr-4">
+                                <p className="font-semibold">{request.seller_name}</p>
+                                <p className="text-xs text-gray-500">{request.seller_phone}</p>
+                                {request.seller_email && (
+                                  <p className="text-xs text-gray-500">{request.seller_email}</p>
+                                )}
+                              </td>
+                              <td className="py-4 pr-4">
+                                <p className="font-semibold">{request.product_name}</p>
+                                <p className="text-xs text-gray-500">{request.category}</p>
+                                <p className="text-xs text-gray-500 line-clamp-2">{request.description}</p>
+                              </td>
+                              <td className="py-4 font-semibold whitespace-nowrap">{formatPrice(request.price)}</td>
+                              <td className="py-4">
+                                <span className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 text-[10px] font-semibold uppercase tracking-widest">
+                                  {request.status}
+                                </span>
+                              </td>
+                              <td className="py-4 text-sm text-gray-500 whitespace-nowrap">
+                                {new Date(request.created_at).toLocaleDateString()}
+                              </td>
+                              <td className="py-4">
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    onClick={() => updateSellerRequestStatus(request.id, "contacted")}
+                                    disabled={updatingRequestId === request.id}
+                                    className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-gray-900"
+                                    title="Mark contacted"
+                                  >
+                                    <PhoneCall size={14} />
+                                  </button>
+                                  <button
+                                    onClick={() => updateSellerRequestStatus(request.id, "approved")}
+                                    disabled={updatingRequestId === request.id}
+                                    className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-emerald-700"
+                                    title="Approve"
+                                  >
+                                    <CheckCircle2 size={14} />
+                                  </button>
+                                  <button
+                                    onClick={() => updateSellerRequestStatus(request.id, "rejected")}
+                                    disabled={updatingRequestId === request.id}
+                                    className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-red-700"
+                                    title="Reject"
+                                  >
+                                    <XCircle size={14} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div className="xl:hidden space-y-3">
+                      {filteredSellerRequests.map((request) => (
+                        <div key={request.id} className="border border-gray-100 rounded-2xl p-4">
+                          <div className="flex justify-between gap-3">
+                            <div>
+                              <p className="font-semibold">{request.seller_name}</p>
+                              <p className="text-xs text-gray-500">{request.seller_phone}</p>
+                              <p className="text-xs text-gray-500 mt-1">{request.product_name}</p>
+                            </div>
+                            <span className="h-fit px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 text-[10px] font-semibold uppercase tracking-widest">
+                              {request.status}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-2">{request.description}</p>
+                          <div className="flex gap-2 mt-4">
+                            <button
+                              onClick={() => updateSellerRequestStatus(request.id, "contacted")}
+                              className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 text-xs font-semibold uppercase tracking-widest"
+                            >
+                              Contacted
+                            </button>
+                            <button
+                              onClick={() => updateSellerRequestStatus(request.id, "approved")}
+                              className="flex-1 py-2 rounded-xl bg-emerald-600 text-white text-xs font-semibold uppercase tracking-widest"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => updateSellerRequestStatus(request.id, "rejected")}
+                              className="flex-1 py-2 rounded-xl bg-gray-900 text-white text-xs font-semibold uppercase tracking-widest"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {!isFetchingRequests && filteredSellerRequests.length === 0 && (
+                      <p className="text-center text-gray-500 text-sm py-10">No seller requests found.</p>
+                    )}
+                  </div>
+                </>
               )}
             </section>
-          </div>
-        </div>
-      </main>
+        </main>
+      </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center px-4">
