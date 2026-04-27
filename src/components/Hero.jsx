@@ -1,138 +1,237 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "../lib/supabase";
-import { TrendingUp, Sparkles, ShoppingBag } from "lucide-react";
-import HeroImage from "../assets/hero.png";
+import { ChevronRight, ChevronLeft, UserRound, Heart, Home, Watch, Zap, MessageCircle, Store, Globe, PhoneCall } from "lucide-react";
 
-const phrases = [
-    "New Season Arrival",
-    "Limited Edition Drops",
-    "Premium Quality",
-    "Everyday Essentials"
+const categories = [
+    { label: "Men", to: "/store?cat=men", icon: UserRound },
+    { label: "Women", to: "/store?cat=women", icon: Heart },
+    { label: "Curtains", to: "/store?cat=curtains", icon: Home },
+    { label: "Accessories", to: "/store?cat=accessories", icon: Watch },
+    { label: "Sale", to: "/store?cat=sale", icon: Zap, accent: true },
+];
+
+const carouselSlides = [
+    { image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=900&h=700", label: "Footwear", tag: "Limited Edition" },
+    { image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&q=80&w=900&h=700", label: "Jackets", tag: "New Drop" },
+    { image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=900&h=700", label: "Curtains", tag: "Home Collection" },
+    { image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=900&h=700", label: "Women's Wear", tag: "2026 Season" },
 ];
 
 const Hero = () => {
-    const [phraseIndex, setPhraseIndex] = useState(0);
-    const [highlightedProducts, setHighlightedProducts] = useState([]);
+    const [hoveredCat, setHoveredCat] = useState(null);
+    const [current, setCurrent] = useState(0);
 
     useEffect(() => {
-        const fetchHighlights = async () => {
-            const { data } = await supabase
-                .from('products')
-                .select('name')
-                .eq('is_highlighted', true)
-                .limit(3);
-            if (data) setHighlightedProducts(data);
-        };
-        fetchHighlights();
-
-        const interval = setInterval(() => {
-            setPhraseIndex((prev) => (prev + 1) % phrases.length);
-        }, 3000); // Change text every 3 seconds
-        return () => clearInterval(interval);
+        const timer = setInterval(() => setCurrent((p) => (p + 1) % carouselSlides.length), 4500);
+        return () => clearInterval(timer);
     }, []);
 
+    const prev = useCallback(() => setCurrent((p) => (p - 1 + carouselSlides.length) % carouselSlides.length), []);
+    const next = useCallback(() => setCurrent((p) => (p + 1) % carouselSlides.length), []);
+
     return (
-        <section className="relative min-h-screen flex flex-col items-center overflow-hidden bg-gray-50">
-            <style>{`
-                @keyframes marquee {
-                    0% { transform: translateX(0); }
-                    100% { transform: translateX(-50%); }
-                }
-                .animate-marquee {
-                    display: flex;
-                    width: fit-content;
-                    animation: marquee 30s linear infinite;
-                }
-            `}</style>
+        <section className="relative w-full overflow-hidden flex flex-col justify-center" style={{ minHeight: "85vh", backgroundColor: "#fdfdfd" }}>
+            {/* Doodle pattern background - Light theme */}
+            <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.04]"
+                style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                }}
+            />
 
-            <div className="relative flex-grow w-full flex items-center justify-center">
-                {/* Background Layer with Gradient Overlay for Better Contrast */}
-                <div className="absolute inset-0 z-0">
-                    <div
-                        className="absolute inset-0 bg-cover bg-center md:bg-right bg-no-repeat"
-                        style={{ backgroundImage: `url(${HeroImage})` }}
-                    />
-                    {/* Gradient overlay to ensure text is always readable */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent md:from-white/90 md:via-white/50" />
-                </div>
+            {/* Floating panels — 3 Columns Jumia Style (Sharp Edges, White theme, Larger) */}
+            <div className="relative z-10 flex items-stretch justify-center gap-6 px-4 md:px-8 lg:px-10 py-12 max-w-[1700px] mx-auto w-full">
 
-                <div className="container mx-auto px-6 md:px-13 z-10 relative pb-12 lg:pb-32 pt-20 lg:pt-0">
-                    <div className="max-w-2xl text-left relative">
-                        {/* Decorative element */}
-                        <div className="absolute -left-6 -top-6 w-20 h-20 bg-red-500/10 rounded-full blur-2xl"></div>
-
-                        <div className="inline-flex items-center gap-3 text-red-600 font-bold tracking-[0.2em] uppercase mb-4 md:mb-6 text-[10px] md:text-sm relative z-10 h-6">
-                            <span className="w-6 md:w-8 h-px bg-red-600"></span>
-                            <div className="relative w-64 overflow-hidden h-full">
-                                <AnimatePresence mode="wait">
-                                    <motion.span
-                                        key={phraseIndex}
-                                        initial={{ y: 20, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        exit={{ y: -20, opacity: 0 }}
-                                        transition={{ duration: 0.5, ease: "easeOut" }}
-                                        className="absolute inset-0 flex items-center"
+                {/* ─── LEFT — Category Card (Col 1) ─── */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="hidden md:flex flex-col shrink-0 bg-white shadow-2xl"
+                    style={{ width: "260px" }}
+                >
+                    <div className="px-6 py-5 bg-gray-50 border-b border-gray-100">
+                        <p className="text-[10px] font-black tracking-[0.25em] uppercase text-gray-500">Shop By</p>
+                    </div>
+                    <ul className="flex flex-col py-3 flex-grow">
+                        {categories.map((cat, i) => {
+                            const Icon = cat.icon;
+                            const isHovered = hoveredCat === i;
+                            return (
+                                <li key={cat.label}>
+                                    <Link
+                                        to={cat.to}
+                                        onMouseEnter={() => setHoveredCat(i)}
+                                        onMouseLeave={() => setHoveredCat(null)}
+                                        className={`flex items-center justify-between gap-3 mx-3 px-4 py-3.5 border-l-2 transition-all duration-200
+                                            ${isHovered ? "border-black bg-gray-50 text-black" : "border-transparent text-gray-600"}
+                                            ${cat.accent && !isHovered ? "text-red-600 font-bold" : ""}
+                                        `}
                                     >
-                                        {phrases[phraseIndex]}
-                                    </motion.span>
-                                </AnimatePresence>
+                                        <div className="flex items-center gap-3">
+                                            <Icon size={16} className={`transition-colors ${isHovered ? "text-black" : "text-gray-400"}`} />
+                                            <span className="font-black text-[13px] tracking-wide uppercase">{cat.label}</span>
+                                        </div>
+                                    </Link>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                    <div className="px-6 py-5 bg-gray-50 border-t border-gray-100 mt-auto">
+                        <Link to="/store" className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-black transition-colors">
+                            All Products →
+                        </Link>
+                    </div>
+                </motion.div>
+
+                {/* ─── CENTER — Carousel Card (Col 2) ─── */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.55, ease: "easeOut", delay: 0.1 }}
+                    className="flex-1 relative overflow-hidden shadow-2xl bg-black"
+                    style={{ height: "600px" }}
+                >
+                    {/* Slides */}
+                    <AnimatePresence mode="wait">
+                        <motion.img
+                            key={current}
+                            src={carouselSlides[current].image}
+                            alt={carouselSlides[current].label}
+                            initial={{ opacity: 0, scale: 1.05 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.7, ease: "easeInOut" }}
+                            className="absolute inset-0 w-full h-full object-cover"
+                        />
+                    </AnimatePresence>
+
+                    {/* Gradient Overlay for Text */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
+
+                    {/* Slide Info */}
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={`info-${current}`}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            transition={{ duration: 0.5 }}
+                            className="absolute bottom-12 left-12 max-w-lg"
+                        >
+                            <span className="inline-block bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 shadow-lg mb-4">
+                                {carouselSlides[current].tag}
+                            </span>
+                            <p className="text-white font-black tracking-tight leading-none drop-shadow-2xl"
+                                style={{ fontSize: "clamp(54px, 7vw, 96px)" }}>
+                                {carouselSlides[current].label}
+                            </p>
+                            <Link to="/store" className="mt-8 inline-flex items-center gap-2 bg-white text-black px-9 py-4 font-black text-xs uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-xl">
+                                Shop Now <ChevronRight size={15} />
+                            </Link>
+                        </motion.div>
+                    </AnimatePresence>
+
+                    {/* Nav Arrows */}
+                    <button onClick={prev} className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-black hover:scale-105 transition-all">
+                        <ChevronLeft size={20} />
+                    </button>
+                    <button onClick={next} className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-black hover:scale-105 transition-all">
+                        <ChevronRight size={20} />
+                    </button>
+
+                    {/* Dots */}
+                    <div className="absolute bottom-10 right-12 flex gap-2.5 items-center">
+                        {carouselSlides.map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setCurrent(i)}
+                                className={`transition-all duration-300 ${i === current ? "w-10 h-1.5 bg-white" : "w-5 h-1.5 bg-white/40 hover:bg-white/80"}`}
+                            />
+                        ))}
+                    </div>
+                </motion.div>
+
+                {/* ─── RIGHT — Action Cards (Col 3) ─── */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+                    className="hidden lg:flex flex-col gap-6 shrink-0"
+                    style={{ width: "280px" }}
+                >
+                    {/* Top Card: Quick Links */}
+                    <div className="bg-white p-7 shadow-2xl flex-1 flex flex-col justify-center">
+                        <ul className="flex flex-col gap-6 h-full py-1">
+                            <li>
+                                <a href="https://wa.me/254711011011" target="_blank" rel="noreferrer" className="flex items-center gap-4 group cursor-pointer">
+                                    <div className="w-11 h-11 bg-gray-100 text-gray-500 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-all duration-300">
+                                        <MessageCircle size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-900 text-sm font-black tracking-wide uppercase leading-tight">Order via<br />WhatsApp</p>
+                                    </div>
+                                </a>
+                            </li>
+                            <div className="h-px w-full bg-gray-100" />
+                            <li>
+                                <Link to="/worldwide" className="flex items-center gap-4 group cursor-pointer">
+                                    <div className="w-11 h-11 bg-gray-100 text-gray-500 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-all duration-300">
+                                        <Globe size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-900 text-sm font-black tracking-wide uppercase leading-tight">Global<br />Shipping</p>
+                                    </div>
+                                </Link>
+                            </li>
+                            <div className="h-px w-full bg-gray-100" />
+                            <li>
+                                <Link to="/sell" className="flex items-center gap-4 group cursor-pointer">
+                                    <div className="w-11 h-11 bg-gray-100 text-gray-500 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-all duration-300">
+                                        <Store size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-900 text-sm font-black tracking-wide uppercase leading-tight">Sell on<br />Rona</p>
+                                    </div>
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Bottom Card: Promo Banner */}
+                    <div className="bg-[#cc1111] p-8 shadow-2xl relative overflow-hidden flex flex-col justify-between" style={{ minHeight: "220px" }}>
+                        <div className="absolute top-5 right-5 opacity-[0.15]">
+                            <PhoneCall size={70} className="text-white" />
+                        </div>
+
+                        <div className="relative z-10 flex flex-col h-full justify-center">
+                            <div>
+                                <p className="text-white/70 text-[10px] font-black uppercase tracking-[0.25em] mb-2">Support</p>
+                                <p className="text-white font-black tracking-tighter leading-none mb-1" style={{ fontSize: "32px" }}>
+                                    0711 011 011
+                                </p>
+                                <p className="text-white font-bold text-xs uppercase tracking-widest mt-2 drop-shadow-sm">Call to order</p>
                             </div>
                         </div>
-
-                        <h1 className="text-4xl sm:text-6xl md:text-8xl font-black mb-4 md:mb-6 leading-[1.15] md:leading-[1.1] tracking-tight text-gray-900 relative z-10">
-                            Elevate Your <br className="hidden sm:block" />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-pink-600">
-                                Signature Style.
-                            </span>
-                        </h1>
-
-                        <p className="text-base md:text-2xl text-gray-600 mb-8 md:mb-10 leading-relaxed max-w-xl font-medium relative z-10">
-                            Experience the fusion of comfort and high-fashion. Our curated 2026 collection is designed for those who <i className="text-gray-900 font-bold">lead</i>, not follow.
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row gap-6 relative z-10">
-                            <Link
-                                to="/store"
-                                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-red-600 px-10 py-4 font-bold text-white transition-all duration-300 hover:bg-red-700 hover:shadow-xl hover:shadow-red-600/30"
-                            >
-                                <span className="absolute inset-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></span>
-                                <span className="relative">Shop Store</span>
-                            </Link>
-
-                            <Link
-                                to="/about"
-                                className="inline-flex items-center justify-center px-10 py-4 rounded-full font-bold text-gray-900 border-2 border-gray-200 hover:border-gray-900 hover:bg-gray-50 transition-all duration-300"
-                            >
-                                Our Story
-                            </Link>
-                        </div>
                     </div>
-                </div>
+                </motion.div>
             </div>
 
-            {/* Sales Banner - Moved below content and styled Black & White */}
-            <div className="w-full bg-black text-white py-4 relative z-[60] mt-0 overflow-hidden border-y border-white/10">
-                <div className="flex whitespace-nowrap animate-marquee items-center gap-12 px-6">
-                    {[0, 1, 2, 3].map((i) => (
-                        <div key={i} className="flex items-center gap-4 text-[10px] md:text-xs font-black uppercase tracking-[0.3em]">
-                            <TrendingUp size={14} />
-                            <span>Exclusive Sales live now</span>
-                            <Sparkles size={14} />
-                            {highlightedProducts.length > 0 ? (
-                                <span>Featured: {highlightedProducts.map(p => p.name).join(" • ")}</span>
-                            ) : (
-                                <span>Premium Drop 2026</span>
-                            )}
-                            <ShoppingBag size={14} />
-                        </div>
-                    ))}
-                </div>
+            {/* Mobile strip */}
+            <div className="md:hidden absolute bottom-0 left-0 right-0 z-10 flex overflow-x-auto gap-2 px-4 pb-5 no-scrollbar">
+                {categories.map((cat) => {
+                    const Icon = cat.icon;
+                    return (
+                        <Link key={cat.label} to={cat.to}
+                            className={`shrink-0 flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-sm
+                                ${cat.accent ? "bg-red-600 text-white" : "bg-white text-gray-900"}`}>
+                            <Icon size={12} /> {cat.label}
+                        </Link>
+                    );
+                })}
             </div>
         </section>
     );
-
 };
 
 export default Hero;
