@@ -24,17 +24,17 @@ const ProductCard = ({ product }) => {
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
 
                 {/* Badges */}
-                <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
-                    <span className="bg-white/95 backdrop-blur-md shadow-sm text-gray-900 border border-gray-100 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">
+                <div className="absolute top-2 left-2 sm:top-4 sm:left-4 flex flex-col gap-1.5 sm:gap-2 z-10">
+                    <span className="bg-white/95 backdrop-blur-md shadow-sm text-gray-900 border border-gray-100 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest">
                         New
                     </span>
                     {product.is_out_of_stock && (
-                        <span className="bg-gray-900/95 backdrop-blur-md shadow-sm text-white px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">
+                        <span className="bg-gray-900/95 backdrop-blur-md shadow-sm text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest">
                             Sold Out
                         </span>
                     )}
                     {product.on_offer && (
-                        <span className="bg-red-600/95 backdrop-blur-md shadow-sm text-white px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">
+                        <span className="bg-red-600/95 backdrop-blur-md shadow-sm text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest">
                             Sale
                         </span>
                     )}
@@ -67,43 +67,43 @@ const ProductCard = ({ product }) => {
             </div>
 
             {/* Info Section */}
-            <div className="p-5 sm:p-6 flex flex-col flex-grow relative z-10 bg-transparent">
-                <div className="flex justify-between items-start mb-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-red-500">{product.category}</p>
-                    <div className="text-right">
+            <div className="p-3 sm:p-5 md:p-6 flex flex-col flex-grow relative z-10 bg-transparent">
+                <div className="flex justify-between items-start mb-1.5 sm:mb-2">
+                    <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.25em] text-red-500 truncate mr-2">{product.category}</p>
+                    <div className="text-right shrink-0">
                         {product.on_offer && product.original_price && (
-                            <span className="text-[10px] text-gray-400 line-through font-bold block leading-none mb-1">
+                            <span className="text-[9px] sm:text-[10px] text-gray-400 line-through font-bold block leading-none mb-0.5 sm:mb-1">
                                 {formatPrice(product.original_price)}
                             </span>
                         )}
-                        <span className="font-black text-[15px] sm:text-[17px] text-gray-900 leading-none tracking-tight">
+                        <span className="font-black text-[13px] sm:text-[17px] text-gray-900 leading-none tracking-tight">
                             {formatPrice(product.price)}
                         </span>
                     </div>
                 </div>
 
-                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 line-clamp-1 group-hover:text-red-600 transition-colors">
+                <h3 className="text-sm sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 line-clamp-1 group-hover:text-red-600 transition-colors">
                     {product.name}
                 </h3>
 
                 {/* Sizes */}
-                <div className="flex flex-wrap gap-1.5 mb-5 mt-auto">
-                    {(product.sizes?.length > 0 ? product.sizes : ["S", "M", "L", "XL"]).slice(0, 4).map((size) => (
-                        <span key={size} className="text-[10px] font-bold border border-gray-100 bg-gray-50 px-2 py-1 rounded text-gray-500 group-hover:border-gray-200 transition-colors">
+                <div className="flex flex-wrap gap-1 md:gap-1.5 mb-3 sm:mb-5 mt-auto">
+                    {(product.sizes?.length > 0 ? product.sizes : ["S", "M", "L", "XL"]).slice(0, 3).map((size) => (
+                        <span key={size} className="text-[9px] sm:text-[10px] font-bold border border-gray-100 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-gray-500 group-hover:border-gray-200 transition-colors">
                             {size}
                         </span>
                     ))}
-                    {(product.sizes?.length > 4) && <span className="text-[10px] font-bold text-gray-400 px-1 py-1 flex items-center">+</span>}
+                    {(product.sizes?.length > 3) && <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 px-1 py-1 flex items-center">+</span>}
                 </div>
 
-                <div className="w-full h-px bg-gray-100 mb-5" />
+                <div className="w-full h-px bg-gray-100 mb-3 sm:mb-5" />
 
                 <button
                     onClick={(e) => { e.stopPropagation(); !product.is_out_of_stock && addToCart(product); }}
                     disabled={product.is_out_of_stock}
-                    className={`w-full py-3.5 rounded-xl font-bold uppercase tracking-widest text-[11px] transition-all duration-300 ${product.is_out_of_stock
-                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                            : "bg-black text-white hover:bg-red-600 hover:shadow-lg hover:shadow-red-600/30"
+                    className={`w-full py-2 sm:py-3.5 rounded-xl font-bold uppercase tracking-widest text-[9px] sm:text-[11px] transition-all duration-300 ${product.is_out_of_stock
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-black text-white hover:bg-red-600 hover:shadow-lg hover:shadow-red-600/30"
                         }`}
                 >
                     {product.is_out_of_stock ? "Sold Out" : "Add to Cart"}
