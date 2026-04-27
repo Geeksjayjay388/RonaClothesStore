@@ -12,15 +12,30 @@ const categories = [
 ];
 
 const carouselSlides = [
-    { image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=100&w=2560&h=1440", label: "Footwear", tag: "Limited Edition" },
-    { image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=100&w=2560&h=1440", label: "Jackets", tag: "New Drop" },
-    { image: "https://images.unsplash.com/photo-1630655107617-c8731a3ba3d6?auto=format&fit=crop&q=100&w=2560&h=1440", label: "Curtains", tag: "Home Collection" },
-    { image: "https://images.unsplash.com/photo-1613915617430-8ab0fd7c6baf?auto=format&fit=crop&q=100&w=2560&h=1440", label: "Women's Wear", tag: "2026 Season" },
+    { image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=75&w=1600&h=900&fm=webp", label: "Footwear", tag: "Limited Edition" },
+    { image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=75&w=1600&h=900&fm=webp", label: "Jackets", tag: "New Drop" },
+    { image: "https://images.unsplash.com/photo-1630655107617-c8731a3ba3d6?auto=format&fit=crop&q=75&w=1600&h=900&fm=webp", label: "Curtains", tag: "Home Collection" },
+    { image: "https://images.unsplash.com/photo-1613915617430-8ab0fd7c6baf?auto=format&fit=crop&q=75&w=1600&h=900&fm=webp", label: "Women's Wear", tag: "2026 Season" },
 ];
 
 const Hero = () => {
     const [hoveredCat, setHoveredCat] = useState(null);
     const [current, setCurrent] = useState(0);
+    const [loadedSlides, setLoadedSlides] = useState(() => new Set());
+
+    useEffect(() => {
+        carouselSlides.forEach((slide, index) => {
+            const img = new Image();
+            img.src = slide.image;
+            img.onload = () => {
+                setLoadedSlides((prev) => {
+                    const next = new Set(prev);
+                    next.add(index);
+                    return next;
+                });
+            };
+        });
+    }, []);
 
     useEffect(() => {
         const timer = setInterval(() => setCurrent((p) => (p + 1) % carouselSlides.length), 4500);
@@ -93,11 +108,17 @@ const Hero = () => {
                     style={{ height: "600px" }}
                 >
                     {/* Slides */}
+                    {!loadedSlides.has(current) && (
+                        <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+                    )}
                     <AnimatePresence mode="wait">
                         <motion.img
                             key={current}
                             src={carouselSlides[current].image}
                             alt={carouselSlides[current].label}
+                            loading={current === 0 ? "eager" : "lazy"}
+                            fetchPriority={current === 0 ? "high" : "auto"}
+                            decoding="async"
                             initial={{ opacity: 0, scale: 1.05 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
