@@ -3,7 +3,6 @@ import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import LatestProducts from "../components/LatestProducts";
 import MostPopular from "../components/MostPopular";
-import LatestStories from "../components/LatestStories";
 import Footer from "../components/Footer";
 
 const HomePage = () => {
@@ -14,7 +13,6 @@ const HomePage = () => {
                 <Hero />
                 <LatestProducts />
                 <MostPopular />
-                <LatestStories />
             </main>
             <Footer />
         </div>
