@@ -317,9 +317,9 @@ const AdminDashboard = () => {
         sizes: isCurtainsCategory
           ? []
           : formData.sizes
-              .split(",")
-              .map((size) => size.trim())
-              .filter(Boolean),
+            .split(",")
+            .map((size) => size.trim())
+            .filter(Boolean),
       };
 
       if (editItem) {
@@ -385,33 +385,30 @@ const AdminDashboard = () => {
           <nav className="space-y-2">
             <button
               onClick={() => setActiveTab("overview")}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
-                activeTab === "overview"
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${activeTab === "overview"
                   ? "bg-gray-900 text-white"
                   : "text-gray-700 hover:bg-gray-100"
-              }`}
+                }`}
             >
               <LayoutDashboard size={18} />
               Overview
             </button>
             <button
               onClick={() => setActiveTab("products")}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
-                activeTab === "products"
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${activeTab === "products"
                   ? "bg-gray-900 text-white"
                   : "text-gray-700 hover:bg-gray-100"
-              }`}
+                }`}
             >
               <Package size={18} />
               Products
             </button>
             <button
               onClick={() => setActiveTab("requests")}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
-                activeTab === "requests"
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${activeTab === "requests"
                   ? "bg-gray-900 text-white"
                   : "text-gray-700 hover:bg-gray-100"
-              }`}
+                }`}
             >
               <MessagesSquare size={18} />
               Seller Requests
@@ -428,7 +425,7 @@ const AdminDashboard = () => {
           </div>
         </aside>
 
-        <main className="flex-1 px-4 py-4 md:px-6 md:py-6 lg:px-8 lg:py-8">
+        <main className="flex-1 px-4 py-4 pb-24 md:px-6 md:py-6 md:pb-24 lg:pb-8 lg:px-8 lg:py-8">
           <section className="space-y-6 max-w-7xl mx-auto">
             <div className={`${cardClass} flex flex-col md:flex-row md:items-center justify-between gap-4`}>
               <div>
@@ -437,15 +434,15 @@ const AdminDashboard = () => {
                   {activeTab === "overview"
                     ? "Overview"
                     : activeTab === "products"
-                    ? "Products"
-                    : "Seller Requests"}
+                      ? "Products"
+                      : "Seller Requests"}
                 </h2>
                 <p className="text-gray-500 text-sm mt-1">
                   {activeTab === "overview"
                     ? "High-level operational metrics for your store."
                     : activeTab === "products"
-                    ? "Manage inventory, pricing, and listing status in one place."
-                    : "Track seller submissions and update request statuses."}
+                      ? "Manage inventory, pricing, and listing status in one place."
+                      : "Track seller submissions and update request statuses."}
                 </p>
               </div>
 
@@ -460,380 +457,415 @@ const AdminDashboard = () => {
               )}
             </div>
 
-              {activeTab === "overview" ? (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                    {kpiCards.map((card) => (
-                      <div key={card.label} className={cardClass}>
-                        <div className="flex items-center justify-between mb-6">
-                          <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">
-                            {card.label}
-                          </p>
-                          <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-700 border border-gray-200">
-                            {React.createElement(card.icon, { size: 18 })}
+            {activeTab === "overview" ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                  {kpiCards.map((card) => (
+                    <div key={card.label} className={cardClass}>
+                      <div className="flex items-center justify-between mb-6">
+                        <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">
+                          {card.label}
+                        </p>
+                        <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-700 border border-gray-200">
+                          {React.createElement(card.icon, { size: 18 })}
+                        </div>
+                      </div>
+                      <p className="text-2xl font-bold tracking-tight">{card.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className={cardClass}>
+                  <div className="flex items-center justify-between mb-5">
+                    <h2 className="text-lg font-bold tracking-tight">Newest Products</h2>
+                    <button
+                      onClick={() => setActiveTab("products")}
+                      className="text-xs font-semibold uppercase tracking-widest text-gray-700 hover:text-black"
+                    >
+                      Manage
+                    </button>
+                  </div>
+
+                  <div className="divide-y divide-gray-100">
+                    {products.slice(0, 5).map((product) => (
+                      <div key={product.id} className="py-4 flex items-center gap-4">
+                        <img
+                          src={product.image_url || product.image}
+                          alt={product.name}
+                          className="w-14 h-14 rounded-xl object-cover bg-gray-100"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold truncate">{product.name}</p>
+                          <p className="text-xs text-gray-500">{product.category || "Uncategorized"}</p>
+                        </div>
+                        <p className="font-semibold">{formatPrice(product.price)}</p>
+                      </div>
+                    ))}
+                    {products.length === 0 && (
+                      <p className="text-sm text-gray-500 py-8 text-center">
+                        No products found yet.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </>
+            ) : activeTab === "products" ? (
+              <>
+                <div className={`${cardClass} flex flex-col lg:flex-row gap-3`}>
+                  <div className="relative flex-1">
+                    <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search by name, category or description..."
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 font-medium focus:outline-none focus:border-gray-400"
+                    />
+                  </div>
+
+                  <div className="flex gap-3">
+                    <div className="relative">
+                      <Filter
+                        size={16}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                      />
+                      <select
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                        className="bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-8 py-3 font-medium focus:outline-none focus:border-gray-400"
+                      >
+                        {categories.map((category) => (
+                          <option key={category} value={category}>
+                            {category === "all" ? "All Categories" : category}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-gray-400"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="instock">In Stock</option>
+                      <option value="outofstock">Out of Stock</option>
+                      <option value="onoffer">On Offer</option>
+                      <option value="highlighted">Highlighted</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className={cardClass}>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-bold">Products ({filteredProducts.length})</h2>
+                    {isFetching && <Loader2 size={18} className="animate-spin text-gray-400" />}
+                  </div>
+
+                  <div className="hidden lg:block overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-gray-100">
+                          <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Product</th>
+                          <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Category</th>
+                          <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Price</th>
+                          <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Status</th>
+                          <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredProducts.map((product) => (
+                          <tr key={product.id} className="border-b border-gray-50">
+                            <td className="py-4 pr-4">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <img
+                                  src={product.image_url || product.image}
+                                  alt={product.name}
+                                  className="w-12 h-12 rounded-xl object-cover bg-gray-100"
+                                />
+                                <div className="min-w-0">
+                                  <p className="font-bold truncate">{product.name}</p>
+                                  <p className="text-xs text-gray-500 truncate">
+                                    {Array.isArray(product.sizes) && product.sizes.length > 0
+                                      ? `Sizes: ${product.sizes.join(", ")}`
+                                      : "No size variants"}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-4 text-sm font-medium">{product.category || "-"}</td>
+                            <td className="py-4 font-black">{formatPrice(product.price)}</td>
+                            <td className="py-4">
+                              <div className="flex flex-wrap gap-1.5">
+                                {product.is_out_of_stock && (
+                                  <span className="px-2 py-0.5 rounded-full bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest">
+                                    Out
+                                  </span>
+                                )}
+                                {product.on_offer && (
+                                  <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
+                                    Offer
+                                  </span>
+                                )}
+                                {product.is_highlighted && (
+                                  <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 text-[10px] font-black uppercase tracking-widest">
+                                    Highlight
+                                  </span>
+                                )}
+                                {!product.is_out_of_stock &&
+                                  !product.on_offer &&
+                                  !product.is_highlighted && (
+                                    <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-widest">
+                                      Active
+                                    </span>
+                                  )}
+                              </div>
+                            </td>
+                            <td className="py-4">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => openEditModal(product)}
+                                  className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-red-600 hover:border-red-200"
+                                >
+                                  <Edit2 size={15} />
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(product.id)}
+                                  disabled={deletingId === product.id}
+                                  className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-black hover:border-gray-300 disabled:opacity-60"
+                                >
+                                  {deletingId === product.id ? (
+                                    <Loader2 size={15} className="animate-spin" />
+                                  ) : (
+                                    <Trash2 size={15} />
+                                  )}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="lg:hidden space-y-3">
+                    {filteredProducts.map((product) => (
+                      <div key={product.id} className="border border-gray-100 rounded-2xl p-4">
+                        <div className="flex gap-3">
+                          <img
+                            src={product.image_url || product.image}
+                            alt={product.name}
+                            className="w-16 h-16 rounded-xl object-cover bg-gray-100"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold truncate">{product.name}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">{product.category || "Uncategorized"}</p>
+                            <p className="font-semibold mt-1">{formatPrice(product.price)}</p>
                           </div>
                         </div>
-                        <p className="text-2xl font-bold tracking-tight">{card.value}</p>
+                        <div className="flex gap-2 mt-4">
+                          <button
+                            onClick={() => openEditModal(product)}
+                            className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 font-semibold text-xs uppercase tracking-widest"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(product.id)}
+                            className="flex-1 py-2 rounded-xl bg-gray-900 text-white font-semibold text-xs uppercase tracking-widest"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
 
-                  <div className={cardClass}>
-                    <div className="flex items-center justify-between mb-5">
-                      <h2 className="text-lg font-bold tracking-tight">Newest Products</h2>
-                      <button
-                        onClick={() => setActiveTab("products")}
-                        className="text-xs font-semibold uppercase tracking-widest text-gray-700 hover:text-black"
-                      >
-                        Manage
-                      </button>
-                    </div>
-
-                    <div className="divide-y divide-gray-100">
-                      {products.slice(0, 5).map((product) => (
-                        <div key={product.id} className="py-4 flex items-center gap-4">
-                          <img
-                            src={product.image_url || product.image}
-                            alt={product.name}
-                            className="w-14 h-14 rounded-xl object-cover bg-gray-100"
-                          />
-                          <div className="min-w-0 flex-1">
-                            <p className="font-semibold truncate">{product.name}</p>
-                            <p className="text-xs text-gray-500">{product.category || "Uncategorized"}</p>
-                          </div>
-                          <p className="font-semibold">{formatPrice(product.price)}</p>
-                        </div>
-                      ))}
-                      {products.length === 0 && (
-                        <p className="text-sm text-gray-500 py-8 text-center">
-                          No products found yet.
-                        </p>
-                      )}
-                    </div>
+                  {!isFetching && filteredProducts.length === 0 && (
+                    <p className="text-center text-gray-500 text-sm py-10">
+                      No products match your current filters.
+                    </p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={`${cardClass} flex flex-col md:flex-row md:items-center justify-between gap-3`}>
+                  <div>
+                    <h3 className="text-lg font-bold">Seller Requests</h3>
+                    <p className="text-sm text-gray-500">Review and update inbound seller submissions.</p>
                   </div>
-                </>
-              ) : activeTab === "products" ? (
-                <>
-                  <div className={`${cardClass} flex flex-col lg:flex-row gap-3`}>
-                    <div className="relative flex-1">
-                      <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search by name, category or description..."
-                        className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 font-medium focus:outline-none focus:border-gray-400"
-                      />
-                    </div>
+                  <select
+                    value={requestStatusFilter}
+                    onChange={(e) => setRequestStatusFilter(e.target.value)}
+                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-gray-400"
+                  >
+                    <option value="all">All statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </div>
 
-                    <div className="flex gap-3">
-                      <div className="relative">
-                        <Filter
-                          size={16}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                        />
-                        <select
-                          value={categoryFilter}
-                          onChange={(e) => setCategoryFilter(e.target.value)}
-                          className="bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-8 py-3 font-medium focus:outline-none focus:border-gray-400"
-                        >
-                          {categories.map((category) => (
-                            <option key={category} value={category}>
-                              {category === "all" ? "All Categories" : category}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-gray-400"
-                      >
-                        <option value="all">All Status</option>
-                        <option value="instock">In Stock</option>
-                        <option value="outofstock">Out of Stock</option>
-                        <option value="onoffer">On Offer</option>
-                        <option value="highlighted">Highlighted</option>
-                      </select>
-                    </div>
+                <div className={cardClass}>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-bold">Requests ({filteredSellerRequests.length})</h2>
+                    {isFetchingRequests && <Loader2 size={18} className="animate-spin text-gray-400" />}
                   </div>
 
-                  <div className={cardClass}>
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-lg font-bold">Products ({filteredProducts.length})</h2>
-                      {isFetching && <Loader2 size={18} className="animate-spin text-gray-400" />}
-                    </div>
-
-                    <div className="hidden lg:block overflow-x-auto">
-                      <table className="w-full text-left">
-                        <thead>
-                          <tr className="border-b border-gray-100">
-                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Product</th>
-                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Category</th>
-                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Price</th>
-                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Status</th>
-                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400 text-right">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredProducts.map((product) => (
-                            <tr key={product.id} className="border-b border-gray-50">
-                              <td className="py-4 pr-4">
-                                <div className="flex items-center gap-3 min-w-0">
-                                  <img
-                                    src={product.image_url || product.image}
-                                    alt={product.name}
-                                    className="w-12 h-12 rounded-xl object-cover bg-gray-100"
-                                  />
-                                  <div className="min-w-0">
-                                    <p className="font-bold truncate">{product.name}</p>
-                                    <p className="text-xs text-gray-500 truncate">
-                                      {Array.isArray(product.sizes) && product.sizes.length > 0
-                                        ? `Sizes: ${product.sizes.join(", ")}`
-                                        : "No size variants"}
-                                    </p>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="py-4 text-sm font-medium">{product.category || "-"}</td>
-                              <td className="py-4 font-black">{formatPrice(product.price)}</td>
-                              <td className="py-4">
-                                <div className="flex flex-wrap gap-1.5">
-                                  {product.is_out_of_stock && (
-                                    <span className="px-2 py-0.5 rounded-full bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest">
-                                      Out
-                                    </span>
-                                  )}
-                                  {product.on_offer && (
-                                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
-                                      Offer
-                                    </span>
-                                  )}
-                                  {product.is_highlighted && (
-                                    <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 text-[10px] font-black uppercase tracking-widest">
-                                      Highlight
-                                    </span>
-                                  )}
-                                  {!product.is_out_of_stock &&
-                                    !product.on_offer &&
-                                    !product.is_highlighted && (
-                                      <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-widest">
-                                        Active
-                                      </span>
-                                    )}
-                                </div>
-                              </td>
-                              <td className="py-4">
-                                <div className="flex items-center justify-end gap-2">
-                                  <button
-                                    onClick={() => openEditModal(product)}
-                                    className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-red-600 hover:border-red-200"
-                                  >
-                                    <Edit2 size={15} />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDelete(product.id)}
-                                    disabled={deletingId === product.id}
-                                    className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-black hover:border-gray-300 disabled:opacity-60"
-                                  >
-                                    {deletingId === product.id ? (
-                                      <Loader2 size={15} className="animate-spin" />
-                                    ) : (
-                                      <Trash2 size={15} />
-                                    )}
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    <div className="lg:hidden space-y-3">
-                      {filteredProducts.map((product) => (
-                        <div key={product.id} className="border border-gray-100 rounded-2xl p-4">
-                          <div className="flex gap-3">
-                            <img
-                              src={product.image_url || product.image}
-                              alt={product.name}
-                              className="w-16 h-16 rounded-xl object-cover bg-gray-100"
-                            />
-                            <div className="min-w-0 flex-1">
-                              <p className="font-semibold truncate">{product.name}</p>
-                              <p className="text-xs text-gray-500 mt-0.5">{product.category || "Uncategorized"}</p>
-                              <p className="font-semibold mt-1">{formatPrice(product.price)}</p>
-                            </div>
-                          </div>
-                          <div className="flex gap-2 mt-4">
-                            <button
-                              onClick={() => openEditModal(product)}
-                              className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 font-semibold text-xs uppercase tracking-widest"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(product.id)}
-                              className="flex-1 py-2 rounded-xl bg-gray-900 text-white font-semibold text-xs uppercase tracking-widest"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {!isFetching && filteredProducts.length === 0 && (
-                      <p className="text-center text-gray-500 text-sm py-10">
-                        No products match your current filters.
-                      </p>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className={`${cardClass} flex flex-col md:flex-row md:items-center justify-between gap-3`}>
-                    <div>
-                      <h3 className="text-lg font-bold">Seller Requests</h3>
-                      <p className="text-sm text-gray-500">Review and update inbound seller submissions.</p>
-                    </div>
-                    <select
-                      value={requestStatusFilter}
-                      onChange={(e) => setRequestStatusFilter(e.target.value)}
-                      className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-medium focus:outline-none focus:border-gray-400"
-                    >
-                      <option value="all">All statuses</option>
-                      <option value="pending">Pending</option>
-                      <option value="contacted">Contacted</option>
-                      <option value="approved">Approved</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
-                  </div>
-
-                  <div className={cardClass}>
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-lg font-bold">Requests ({filteredSellerRequests.length})</h2>
-                      {isFetchingRequests && <Loader2 size={18} className="animate-spin text-gray-400" />}
-                    </div>
-
-                    <div className="hidden xl:block overflow-x-auto">
-                      <table className="w-full text-left">
-                        <thead>
-                          <tr className="border-b border-gray-100">
-                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Seller</th>
-                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Product</th>
-                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Price</th>
-                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Status</th>
-                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Created</th>
-                            <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400 text-right">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredSellerRequests.map((request) => (
-                            <tr key={request.id} className="border-b border-gray-50 align-top">
-                              <td className="py-4 pr-4">
-                                <p className="font-semibold">{request.seller_name}</p>
-                                <p className="text-xs text-gray-500">{request.seller_phone}</p>
-                                {request.seller_email && (
-                                  <p className="text-xs text-gray-500">{request.seller_email}</p>
-                                )}
-                              </td>
-                              <td className="py-4 pr-4">
-                                <p className="font-semibold">{request.product_name}</p>
-                                <p className="text-xs text-gray-500">{request.category}</p>
-                                <p className="text-xs text-gray-500 line-clamp-2">{request.description}</p>
-                              </td>
-                              <td className="py-4 font-semibold whitespace-nowrap">{formatPrice(request.price)}</td>
-                              <td className="py-4">
-                                <span className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 text-[10px] font-semibold uppercase tracking-widest">
-                                  {request.status}
-                                </span>
-                              </td>
-                              <td className="py-4 text-sm text-gray-500 whitespace-nowrap">
-                                {new Date(request.created_at).toLocaleDateString()}
-                              </td>
-                              <td className="py-4">
-                                <div className="flex items-center justify-end gap-2">
-                                  <button
-                                    onClick={() => updateSellerRequestStatus(request.id, "contacted")}
-                                    disabled={updatingRequestId === request.id}
-                                    className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-gray-900"
-                                    title="Mark contacted"
-                                  >
-                                    <PhoneCall size={14} />
-                                  </button>
-                                  <button
-                                    onClick={() => updateSellerRequestStatus(request.id, "approved")}
-                                    disabled={updatingRequestId === request.id}
-                                    className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-emerald-700"
-                                    title="Approve"
-                                  >
-                                    <CheckCircle2 size={14} />
-                                  </button>
-                                  <button
-                                    onClick={() => updateSellerRequestStatus(request.id, "rejected")}
-                                    disabled={updatingRequestId === request.id}
-                                    className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-red-700"
-                                    title="Reject"
-                                  >
-                                    <XCircle size={14} />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    <div className="xl:hidden space-y-3">
-                      {filteredSellerRequests.map((request) => (
-                        <div key={request.id} className="border border-gray-100 rounded-2xl p-4">
-                          <div className="flex justify-between gap-3">
-                            <div>
+                  <div className="hidden xl:block overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-gray-100">
+                          <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Seller</th>
+                          <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Product</th>
+                          <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Price</th>
+                          <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Status</th>
+                          <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400">Created</th>
+                          <th className="py-3 text-[10px] uppercase tracking-widest text-gray-400 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredSellerRequests.map((request) => (
+                          <tr key={request.id} className="border-b border-gray-50 align-top">
+                            <td className="py-4 pr-4">
                               <p className="font-semibold">{request.seller_name}</p>
                               <p className="text-xs text-gray-500">{request.seller_phone}</p>
-                              <p className="text-xs text-gray-500 mt-1">{request.product_name}</p>
-                            </div>
-                            <span className="h-fit px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 text-[10px] font-semibold uppercase tracking-widest">
-                              {request.status}
-                            </span>
-                          </div>
-                          <p className="text-xs text-gray-500 mt-2">{request.description}</p>
-                          <div className="flex gap-2 mt-4">
-                            <button
-                              onClick={() => updateSellerRequestStatus(request.id, "contacted")}
-                              className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 text-xs font-semibold uppercase tracking-widest"
-                            >
-                              Contacted
-                            </button>
-                            <button
-                              onClick={() => updateSellerRequestStatus(request.id, "approved")}
-                              className="flex-1 py-2 rounded-xl bg-emerald-600 text-white text-xs font-semibold uppercase tracking-widest"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => updateSellerRequestStatus(request.id, "rejected")}
-                              className="flex-1 py-2 rounded-xl bg-gray-900 text-white text-xs font-semibold uppercase tracking-widest"
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {!isFetchingRequests && filteredSellerRequests.length === 0 && (
-                      <p className="text-center text-gray-500 text-sm py-10">No seller requests found.</p>
-                    )}
+                              {request.seller_email && (
+                                <p className="text-xs text-gray-500">{request.seller_email}</p>
+                              )}
+                            </td>
+                            <td className="py-4 pr-4">
+                              <p className="font-semibold">{request.product_name}</p>
+                              <p className="text-xs text-gray-500">{request.category}</p>
+                              <p className="text-xs text-gray-500 line-clamp-2">{request.description}</p>
+                            </td>
+                            <td className="py-4 font-semibold whitespace-nowrap">{formatPrice(request.price)}</td>
+                            <td className="py-4">
+                              <span className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 text-[10px] font-semibold uppercase tracking-widest">
+                                {request.status}
+                              </span>
+                            </td>
+                            <td className="py-4 text-sm text-gray-500 whitespace-nowrap">
+                              {new Date(request.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="py-4">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => updateSellerRequestStatus(request.id, "contacted")}
+                                  disabled={updatingRequestId === request.id}
+                                  className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-gray-900"
+                                  title="Mark contacted"
+                                >
+                                  <PhoneCall size={14} />
+                                </button>
+                                <button
+                                  onClick={() => updateSellerRequestStatus(request.id, "approved")}
+                                  disabled={updatingRequestId === request.id}
+                                  className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-emerald-700"
+                                  title="Approve"
+                                >
+                                  <CheckCircle2 size={14} />
+                                </button>
+                                <button
+                                  onClick={() => updateSellerRequestStatus(request.id, "rejected")}
+                                  disabled={updatingRequestId === request.id}
+                                  className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:text-red-700"
+                                  title="Reject"
+                                >
+                                  <XCircle size={14} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                </>
-              )}
-            </section>
+
+                  <div className="xl:hidden space-y-3">
+                    {filteredSellerRequests.map((request) => (
+                      <div key={request.id} className="border border-gray-100 rounded-2xl p-4">
+                        <div className="flex justify-between gap-3">
+                          <div>
+                            <p className="font-semibold">{request.seller_name}</p>
+                            <p className="text-xs text-gray-500">{request.seller_phone}</p>
+                            <p className="text-xs text-gray-500 mt-1">{request.product_name}</p>
+                          </div>
+                          <span className="h-fit px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 text-[10px] font-semibold uppercase tracking-widest">
+                            {request.status}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">{request.description}</p>
+                        <div className="flex gap-2 mt-4">
+                          <button
+                            onClick={() => updateSellerRequestStatus(request.id, "contacted")}
+                            className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 text-xs font-semibold uppercase tracking-widest"
+                          >
+                            Contacted
+                          </button>
+                          <button
+                            onClick={() => updateSellerRequestStatus(request.id, "approved")}
+                            className="flex-1 py-2 rounded-xl bg-emerald-600 text-white text-xs font-semibold uppercase tracking-widest"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => updateSellerRequestStatus(request.id, "rejected")}
+                            className="flex-1 py-2 rounded-xl bg-gray-900 text-white text-xs font-semibold uppercase tracking-widest"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {!isFetchingRequests && filteredSellerRequests.length === 0 && (
+                    <p className="text-center text-gray-500 text-sm py-10">No seller requests found.</p>
+                  )}
+                </div>
+              </>
+            )}
+          </section>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <nav
+        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 lg:hidden z-40 px-2 py-2 flex justify-around items-center shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] pb-safe"
+      >
+        <button
+          onClick={() => setActiveTab("overview")}
+          className={`flex flex-col items-center gap-1 flex-1 py-1.5 rounded-xl transition-colors ${activeTab === "overview" ? "text-gray-900" : "text-gray-400 hover:text-gray-600"
+            }`}
+        >
+          <LayoutDashboard size={20} className={activeTab === "overview" ? "text-gray-900" : ""} />
+          <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Overview</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("products")}
+          className={`flex flex-col items-center gap-1 flex-1 py-1.5 rounded-xl transition-colors ${activeTab === "products" ? "text-gray-900" : "text-gray-400 hover:text-gray-600"
+            }`}
+        >
+          <Package size={20} className={activeTab === "products" ? "text-gray-900" : ""} />
+          <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Products</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("requests")}
+          className={`flex flex-col items-center gap-1 flex-1 py-1.5 rounded-xl transition-colors ${activeTab === "requests" ? "text-gray-900" : "text-gray-400 hover:text-gray-600"
+            }`}
+        >
+          <div className="relative">
+            <MessagesSquare size={20} className={activeTab === "requests" ? "text-gray-900" : ""} />
+            {stats.pendingRequests > 0 && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
+            )}
+          </div>
+          <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Requests</span>
+        </button>
+      </nav>
 
       {isModalOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center px-4">
@@ -972,22 +1004,20 @@ const AdminDashboard = () => {
                   onClick={() =>
                     setFormData({ ...formData, is_out_of_stock: !formData.is_out_of_stock })
                   }
-                  className={`px-4 py-3 rounded-xl border text-xs font-black uppercase tracking-widest transition ${
-                    formData.is_out_of_stock
+                  className={`px-4 py-3 rounded-xl border text-xs font-black uppercase tracking-widest transition ${formData.is_out_of_stock
                       ? "bg-red-600 border-red-600 text-white"
                       : "bg-white border-gray-200 text-gray-500 hover:border-red-300"
-                  }`}
+                    }`}
                 >
                   {formData.is_out_of_stock ? "Out of Stock" : "In Stock"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, on_offer: !formData.on_offer })}
-                  className={`px-4 py-3 rounded-xl border text-xs font-black uppercase tracking-widest transition ${
-                    formData.on_offer
+                  className={`px-4 py-3 rounded-xl border text-xs font-black uppercase tracking-widest transition ${formData.on_offer
                       ? "bg-emerald-600 border-emerald-600 text-white"
                       : "bg-white border-gray-200 text-gray-500 hover:border-emerald-300"
-                  }`}
+                    }`}
                 >
                   {formData.on_offer ? "On Offer" : "Regular"}
                 </button>
@@ -996,11 +1026,10 @@ const AdminDashboard = () => {
                   onClick={() =>
                     setFormData({ ...formData, is_highlighted: !formData.is_highlighted })
                   }
-                  className={`px-4 py-3 rounded-xl border text-xs font-black uppercase tracking-widest transition ${
-                    formData.is_highlighted
+                  className={`px-4 py-3 rounded-xl border text-xs font-black uppercase tracking-widest transition ${formData.is_highlighted
                       ? "bg-amber-500 border-amber-500 text-white"
                       : "bg-white border-gray-200 text-gray-500 hover:border-amber-300"
-                  }`}
+                    }`}
                 >
                   {formData.is_highlighted ? "Highlighted" : "Not Highlighted"}
                 </button>
