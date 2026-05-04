@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,10 +13,10 @@ const categories = [
 ];
 
 const carouselSlides = [
-    { image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=75&w=1600&h=900&fm=webp", label: "Footwear", tag: "Limited Edition" },
-    { image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=75&w=1600&h=900&fm=webp", label: "Jackets", tag: "New Drop" },
-    { image: "https://images.unsplash.com/photo-1630655107617-c8731a3ba3d6?auto=format&fit=crop&q=75&w=1600&h=900&fm=webp", label: "Curtains", tag: "Home Collection" },
-    { image: "https://images.unsplash.com/photo-1613915617430-8ab0fd7c6baf?auto=format&fit=crop&q=75&w=1600&h=900&fm=webp", label: "Women's Wear", tag: "2026 Season" },
+    { image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=75&w=1600&h=900&fm=webp", label: "Footwear", tag: "Limited Edition", promoTitle: "Order Now", promoSub: "Within 24 hrs" },
+    { image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&q=75&w=1600&h=900&fm=webp", label: "Jackets", tag: "New Drop", promoTitle: "Support", promoSub: "Call for sizing" },
+    { image: "https://images.unsplash.com/photo-1630655107617-c8731a3ba3d6?auto=format&fit=crop&q=75&w=1600&h=900&fm=webp", label: "Curtains", tag: "Home Collection", promoTitle: "Free Consult", promoSub: "Get measurements" },
+    { image: "https://images.unsplash.com/photo-1613915617430-8ab0fd7c6baf?auto=format&fit=crop&q=75&w=1600&h=900&fm=webp", label: "Women's Wear", tag: "2026 Season", promoTitle: "Styling", promoSub: "Talk to an expert" },
 ];
 
 const Hero = () => {
@@ -185,7 +186,7 @@ const Hero = () => {
                     <div className="bg-white p-7 shadow-2xl flex-1 flex flex-col justify-center">
                         <ul className="flex flex-col gap-6 h-full py-1">
                             <li>
-                                <a href="https://wa.me/254711011011" target="_blank" rel="noreferrer" className="flex items-center gap-4 group cursor-pointer">
+                                <a href="https://wa.me/254742424046" target="_blank" rel="noreferrer" className="flex items-center gap-4 group cursor-pointer">
                                     <div className="w-11 h-11 bg-gray-100 text-gray-500 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-all duration-300">
                                         <MessageCircle size={20} />
                                     </div>
@@ -226,13 +227,21 @@ const Hero = () => {
                         </div>
 
                         <div className="relative z-10 flex flex-col h-full justify-center">
-                            <div>
-                                <p className="text-white/70 text-[10px] font-black uppercase tracking-[0.25em] mb-2">Support</p>
-                                <p className="text-white font-black tracking-tighter leading-none mb-1" style={{ fontSize: "32px" }}>
-                                    0711 011 011
-                                </p>
-                                <p className="text-white font-bold text-xs uppercase tracking-widest mt-2 drop-shadow-sm">Call to order</p>
-                            </div>
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={`promo-${current}`}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.4 }}
+                                >
+                                    <p className="text-white/70 text-[10px] font-black uppercase tracking-[0.25em] mb-2">{carouselSlides[current].promoTitle}</p>
+                                    <p className="text-white font-black tracking-tighter leading-none mb-1" style={{ fontSize: "32px" }}>
+                                        0742 424 046
+                                    </p>
+                                    <p className="text-white font-bold text-xs uppercase tracking-widest mt-2 drop-shadow-sm">{carouselSlides[current].promoSub}</p>
+                                </motion.div>
+                            </AnimatePresence>
                         </div>
                     </div>
                 </motion.div>

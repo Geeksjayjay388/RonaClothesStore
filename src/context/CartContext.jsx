@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { formatPrice } from "../lib/formatters";
+import { isCurtainProduct } from "../lib/productHelpers";
 
 const CartContext = createContext();
 
@@ -18,11 +19,18 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem("rona_cart", JSON.stringify(cartItems));
     }, [cartItems]);
 
+    const resolveSize = (product, size) => {
+        if (isCurtainProduct(product)) return null;
+        return size || "M";
+    };
+
     const addToCart = (product, size = "M") => {
+        const resolvedSize = resolveSize(product, size);
+
         setCartItems((prevItems) => {
             // Check if item with exact same id and size exists
             const existingItemIndex = prevItems.findIndex(
-                (item) => item.id === product.id && item.size === size
+                (item) => item.id === product.id && item.size === resolvedSize
             );
 
             if (existingItemIndex > -1) {
@@ -36,7 +44,7 @@ export const CartProvider = ({ children }) => {
                     ? parseFloat(product.price.replace(/[^0-9.-]+/g, ""))
                     : product.price;
 
-                return [...prevItems, { ...product, price: priceNum, quantity: 1, size }];
+                return [...prevItems, { ...product, price: priceNum, quantity: 1, size: resolvedSize }];
             }
         });
 
@@ -75,10 +83,11 @@ export const CartProvider = ({ children }) => {
     const whatsappNumber = "+254742424046";
 
     const orderOnWhatsApp = (product, size = "M") => {
+        const resolvedSize = resolveSize(product, size);
         const message = encodeURIComponent(
             `Hello RONA 🛍️,\n\nI'd like to order this item:\n\n` +
             `✨ *Product:* ${product.name}\n` +
-            `📏 *Size:* ${size}\n` +
+            (resolvedSize ? `📏 *Size:* ${resolvedSize}\n` : "") +
             `💰 *Price:* ${formatPrice(product.price)}\n\n` +
             `Please let me know how to proceed with payment and delivery. Thank you! 🙏`
         );
@@ -90,7 +99,7 @@ export const CartProvider = ({ children }) => {
         const total = subtotal;
 
         let itemsList = cartItems.map(item =>
-            `🛍️ *${item.name}*\n   📏 Size: ${item.size}\n   🔢 Qty: ${item.quantity}\n   💰 Price: ${formatPrice(item.price * item.quantity)}`
+            `🛍️ *${item.name}*\n${item.size ? `   📏 Size: ${item.size}\n` : ""}   🔢 Qty: ${item.quantity}\n   💰 Price: ${formatPrice(item.price * item.quantity)}`
         ).join('\n\n');
 
         const message = encodeURIComponent(

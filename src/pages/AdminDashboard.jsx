@@ -19,11 +19,13 @@ import {
   CheckCircle2,
   XCircle,
   PhoneCall,
+  Menu,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { formatPrice } from "../lib/formatters";
 import { supabase } from "../lib/supabase";
 import { toast } from "react-hot-toast";
+import { isCurtainProduct } from "../lib/productHelpers";
 
 const EMPTY_FORM = {
   name: "",
@@ -59,6 +61,7 @@ const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [formData, setFormData] = useState(EMPTY_FORM);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const fetchData = async () => {
     setIsFetching(true);
@@ -299,9 +302,10 @@ const AdminDashboard = () => {
       }
 
       const categoryValue = formData.category.trim();
-      const isCurtainsCategory =
-        categoryValue.toLowerCase() === "curtain" ||
-        categoryValue.toLowerCase() === "curtains";
+      const isCurtainsProduct = isCurtainProduct({
+        name: formData.name,
+        category: categoryValue,
+      });
 
       const payload = {
         name: formData.name.trim(),
@@ -314,7 +318,7 @@ const AdminDashboard = () => {
         on_offer: formData.on_offer,
         is_highlighted: formData.is_highlighted,
         original_price: formData.on_offer ? Number(formData.original_price) : null,
-        sizes: isCurtainsCategory
+        sizes: isCurtainsProduct
           ? []
           : formData.sizes
             .split(",")
@@ -343,6 +347,11 @@ const AdminDashboard = () => {
   };
 
   const cardClass = "bg-white border border-gray-200 rounded-2xl p-6";
+  const navItems = [
+    { id: "overview", label: "Overview", icon: LayoutDashboard },
+    { id: "products", label: "Products", icon: Package },
+    { id: "requests", label: "Seller Requests", icon: MessagesSquare },
+  ];
   const kpiCards = [
     { label: "Total Products", value: stats.totalProducts, icon: Package },
     { label: "In Stock", value: stats.inStock, icon: Eye },
@@ -383,36 +392,19 @@ const AdminDashboard = () => {
           </div>
 
           <nav className="space-y-2">
-            <button
-              onClick={() => setActiveTab("overview")}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${activeTab === "overview"
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${activeTab === item.id
                   ? "bg-gray-900 text-white"
                   : "text-gray-700 hover:bg-gray-100"
-                }`}
-            >
-              <LayoutDashboard size={18} />
-              Overview
-            </button>
-            <button
-              onClick={() => setActiveTab("products")}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${activeTab === "products"
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-700 hover:bg-gray-100"
-                }`}
-            >
-              <Package size={18} />
-              Products
-            </button>
-            <button
-              onClick={() => setActiveTab("requests")}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${activeTab === "requests"
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-700 hover:bg-gray-100"
-                }`}
-            >
-              <MessagesSquare size={18} />
-              Seller Requests
-            </button>
+                  }`}
+              >
+                {React.createElement(item.icon, { size: 18 })}
+                {item.label}
+              </button>
+            ))}
           </nav>
 
           <div className="mt-auto rounded-2xl border border-gray-200 bg-gray-50 p-4">
@@ -425,7 +417,26 @@ const AdminDashboard = () => {
           </div>
         </aside>
 
-        <main className="flex-1 px-4 py-4 pb-24 md:px-6 md:py-6 md:pb-24 lg:pb-8 lg:px-8 lg:py-8">
+        <main className="flex-1 px-4 py-4 pb-8 md:px-6 md:py-6 md:pb-8 lg:px-8 lg:py-8">
+          <div className={`${cardClass} lg:hidden mb-4 py-4 px-4 flex items-center justify-between sticky top-2 z-30`}>
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-semibold">Admin Panel</p>
+              <h2 className="text-lg font-bold tracking-tight">
+                {activeTab === "overview"
+                  ? "Overview"
+                  : activeTab === "products"
+                    ? "Products"
+                    : "Seller Requests"}
+              </h2>
+            </div>
+            <button
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="w-11 h-11 rounded-xl border border-gray-200 bg-white flex items-center justify-center text-gray-700"
+              aria-label="Open admin navigation"
+            >
+              <Menu size={20} />
+            </button>
+          </div>
           <section className="space-y-6 max-w-7xl mx-auto">
             <div className={`${cardClass} flex flex-col md:flex-row md:items-center justify-between gap-4`}>
               <div>
@@ -586,7 +597,9 @@ const AdminDashboard = () => {
                                 <div className="min-w-0">
                                   <p className="font-bold truncate">{product.name}</p>
                                   <p className="text-xs text-gray-500 truncate">
-                                    {Array.isArray(product.sizes) && product.sizes.length > 0
+                                    {!isCurtainProduct(product) &&
+                                      Array.isArray(product.sizes) &&
+                                      product.sizes.length > 0
                                       ? `Sizes: ${product.sizes.join(", ")}`
                                       : "No size variants"}
                                   </p>
@@ -832,40 +845,49 @@ const AdminDashboard = () => {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation */}
-      <nav
-        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 lg:hidden z-40 px-2 py-2 flex justify-around items-center shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] pb-safe"
-      >
-        <button
-          onClick={() => setActiveTab("overview")}
-          className={`flex flex-col items-center gap-1 flex-1 py-1.5 rounded-xl transition-colors ${activeTab === "overview" ? "text-gray-900" : "text-gray-400 hover:text-gray-600"
-            }`}
-        >
-          <LayoutDashboard size={20} className={activeTab === "overview" ? "text-gray-900" : ""} />
-          <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Overview</span>
-        </button>
-        <button
-          onClick={() => setActiveTab("products")}
-          className={`flex flex-col items-center gap-1 flex-1 py-1.5 rounded-xl transition-colors ${activeTab === "products" ? "text-gray-900" : "text-gray-400 hover:text-gray-600"
-            }`}
-        >
-          <Package size={20} className={activeTab === "products" ? "text-gray-900" : ""} />
-          <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Products</span>
-        </button>
-        <button
-          onClick={() => setActiveTab("requests")}
-          className={`flex flex-col items-center gap-1 flex-1 py-1.5 rounded-xl transition-colors ${activeTab === "requests" ? "text-gray-900" : "text-gray-400 hover:text-gray-600"
-            }`}
-        >
-          <div className="relative">
-            <MessagesSquare size={20} className={activeTab === "requests" ? "text-gray-900" : ""} />
-            {stats.pendingRequests > 0 && (
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
-            )}
-          </div>
-          <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Requests</span>
-        </button>
-      </nav>
+      {isMobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button
+            onClick={() => setIsMobileSidebarOpen(false)}
+            className="absolute inset-0 bg-black/40"
+            aria-label="Close admin navigation"
+          />
+          <aside className="absolute left-0 top-0 h-full w-[280px] bg-white border-r border-gray-200 px-5 py-6 flex flex-col">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2">Rona</p>
+                <h2 className="text-xl font-bold tracking-tight text-gray-900">Admin Navigation</h2>
+              </div>
+              <button
+                onClick={() => setIsMobileSidebarOpen(false)}
+                className="w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center text-gray-600"
+                aria-label="Close sidebar"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <nav className="space-y-2">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    setIsMobileSidebarOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${activeTab === item.id
+                    ? "bg-gray-900 text-white"
+                    : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                >
+                  {React.createElement(item.icon, { size: 18 })}
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          </aside>
+        </div>
+      )}
 
       {isModalOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center px-4">
@@ -920,8 +942,7 @@ const AdminDashboard = () => {
                   />
                 </div>
 
-                {formData.category.trim().toLowerCase() !== "curtain" &&
-                  formData.category.trim().toLowerCase() !== "curtains" && (
+                {!isCurtainProduct({ name: formData.name, category: formData.category }) && (
                     <div className="md:col-span-2">
                       <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">
                         Sizes (comma separated)

@@ -7,6 +7,7 @@ import { ShoppingCart, MessageSquare, ChevronLeft, ChevronRight, Share2, ArrowLe
 import { formatPrice } from "../lib/formatters";
 import { useCart } from "../context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
+import { isCurtainProduct } from "../lib/productHelpers";
 
 const ProductPage = () => {
     const { id } = useParams();
@@ -45,12 +46,18 @@ const ProductPage = () => {
     const availableSizes = product?.sizes && product.sizes.length > 0
         ? product.sizes
         : ["S", "M", "L", "XL"];
+    const isCurtain = isCurtainProduct(product);
 
     useEffect(() => {
+        if (isCurtain) {
+            setSelectedSize(null);
+            return;
+        }
+
         if (product && !selectedSize && availableSizes.length > 0) {
             setSelectedSize(availableSizes[0]); // default to first size
         }
-    }, [product, availableSizes]);
+    }, [product, availableSizes, isCurtain, selectedSize]);
 
     if (loading) {
         return (
@@ -176,33 +183,34 @@ const ProductPage = () => {
                             <p>{product.description || "Everyday comfort with premium materials. Crafted meticulously for those who demand the finest in contemporary fashion. This piece embodies the brutalist elegance that defines our latest collection."}</p>
                         </div>
 
-                        {/* Size Selection */}
-                        <div className="mb-10">
-                            <div className="flex items-center justify-between mb-4">
-                                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Select Size</h4>
-                                <button className="text-[10px] font-black uppercase tracking-widest text-black underline">Size Guide</button>
+                        {!isCurtain && (
+                            <div className="mb-10">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Select Size</h4>
+                                    <button className="text-[10px] font-black uppercase tracking-widest text-black underline">Size Guide</button>
+                                </div>
+                                <div className="flex flex-wrap gap-3">
+                                    {availableSizes.map((size) => (
+                                        <button
+                                            key={size}
+                                            onClick={() => setSelectedSize(size)}
+                                            className={`min-w-[60px] h-14 flex items-center justify-center border font-black text-sm uppercase tracking-widest transition-all
+                                                ${selectedSize === size
+                                                    ? "border-black bg-black text-white"
+                                                    : "border-gray-200 bg-white text-gray-600 hover:border-black hover:text-black"
+                                                }`}
+                                        >
+                                            {size}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="flex flex-wrap gap-3">
-                                {availableSizes.map((size) => (
-                                    <button
-                                        key={size}
-                                        onClick={() => setSelectedSize(size)}
-                                        className={`min-w-[60px] h-14 flex items-center justify-center border font-black text-sm uppercase tracking-widest transition-all
-                                            ${selectedSize === size
-                                                ? "border-black bg-black text-white"
-                                                : "border-gray-200 bg-white text-gray-600 hover:border-black hover:text-black"
-                                            }`}
-                                    >
-                                        {size}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                        )}
 
                         {/* Actions */}
                         <div className="flex flex-col gap-4">
                             <button
-                                onClick={() => !product.is_out_of_stock && addToCart(product, selectedSize)}
+                                onClick={() => !product.is_out_of_stock && addToCart(product, isCurtain ? null : selectedSize)}
                                 disabled={product.is_out_of_stock}
                                 className={`w-full py-5 font-black uppercase tracking-widest text-sm transition-all flex items-center justify-center gap-3
                                     ${product.is_out_of_stock
@@ -215,7 +223,7 @@ const ProductPage = () => {
 
                             {orderOnWhatsApp && !product.is_out_of_stock && (
                                 <button
-                                    onClick={() => orderOnWhatsApp(product, selectedSize)}
+                                    onClick={() => orderOnWhatsApp(product, isCurtain ? null : selectedSize)}
                                     className="w-full bg-[#25D366] text-white py-5 font-black uppercase tracking-widest text-sm hover:bg-[#1ebd5b] transition-colors flex items-center justify-center gap-3 shadow-2xl"
                                 >
                                     <MessageSquare size={18} /> Order via WhatsApp

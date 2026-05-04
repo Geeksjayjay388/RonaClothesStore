@@ -3,10 +3,12 @@ import { ShoppingBag, Eye, MessageSquare } from "lucide-react";
 import { formatPrice } from "../lib/formatters";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
+import { isCurtainProduct } from "../lib/productHelpers";
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
     const { addToCart, orderOnWhatsApp } = useCart();
+    const isCurtain = isCurtainProduct(product);
 
     return (
         <div
@@ -86,15 +88,16 @@ const ProductCard = ({ product }) => {
                     {product.name}
                 </h3>
 
-                {/* Sizes */}
-                <div className="flex flex-wrap gap-1 md:gap-1.5 mb-3 sm:mb-5 mt-auto">
-                    {(product.sizes?.length > 0 ? product.sizes : ["S", "M", "L", "XL"]).slice(0, 3).map((size) => (
-                        <span key={size} className="text-[9px] sm:text-[10px] font-bold border border-gray-100 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-gray-500 group-hover:border-gray-200 transition-colors">
-                            {size}
-                        </span>
-                    ))}
-                    {(product.sizes?.length > 3) && <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 px-1 py-1 flex items-center">+</span>}
-                </div>
+                {!isCurtain && (
+                    <div className="flex flex-wrap gap-1 md:gap-1.5 mb-3 sm:mb-5 mt-auto">
+                        {(product.sizes?.length > 0 ? product.sizes : ["S", "M", "L", "XL"]).slice(0, 3).map((size) => (
+                            <span key={size} className="text-[9px] sm:text-[10px] font-bold border border-gray-100 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-gray-500 group-hover:border-gray-200 transition-colors">
+                                {size}
+                            </span>
+                        ))}
+                        {(product.sizes?.length > 3) && <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 px-1 py-1 flex items-center">+</span>}
+                    </div>
+                )}
 
                 <div className="w-full h-px bg-gray-100 mb-3 sm:mb-5" />
 
